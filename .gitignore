@@ -177,3 +177,4 @@ temp/
 # - staticfiles/, media/, backups e rollbacks NUNCA
 # -------------------------------------------------
 
+#testando o ci/cd
