@@ -4,27 +4,35 @@
     --accent-color: #f8b739;
     --danger-color: #dc3545;
     --success-color: #28a745;
+    --info-color: #0dcaf0;
+    --light-bg: #f5f7fa;
+    --card-bg: #fff;
+    --shadow: 0 2px 8px rgba(44,85,48,0.10);
 }
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f5f7fa;
+    background-color: var(--light-bg);
+    color: #232b33;
+    min-height: 100vh;
 }
 
-/* Navbar */
+/* ========== NAVBAR ========== */
 .navbar {
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(44,85,48,0.06);
 }
 .navbar-brand {
     font-weight: 700;
     font-size: 1.5rem;
+    letter-spacing: 0.02em;
 }
 
-/* Wrapper/content */
+/* ========== CONTEÚDO CENTRAL ========== */
 .content-wrapper {
-    min-height: calc(100vh - 100px);
+    min-height: calc(100vh - 110px);
     padding: 2rem 0;
+    background: none;
 }
 @media (max-width: 700px) {
     .content-wrapper {
@@ -32,11 +40,12 @@ body {
     }
 }
 
-/* Card custom */
+/* ========== CARDS, CABEÇALHOS ========== */
 .card {
     border: none;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    background: var(--card-bg);
+    box-shadow: var(--shadow);
     margin-bottom: 1.5rem;
 }
 .card-header {
@@ -47,50 +56,72 @@ body {
     font-weight: 600;
     letter-spacing: 0.03em;
 }
+.card-title {
+    font-weight: bold;
+    letter-spacing: 0.01em;
+}
 
-/* Bootstrap override & Botões */
+/* ========== BOTÕES ========== */
 .btn-primary,
 .btn-primary:focus,
 .btn-primary:active {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-    color: #fff;
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: #fff !important;
 }
-
 .btn-primary:hover,
 .btn-primary:active:focus {
-    background-color: var(--secondary-color);
-    border-color: var(--secondary-color);
+    background-color: var(--secondary-color) !important;
+    border-color: var(--secondary-color) !important;
+    color: #fff !important;
 }
 
-/* Saldos */
-.saldo-positivo {
+/* Alerts customizados para Bootstrap */
+.alert-success {
+    background: rgba(40,167,69,0.09);
     color: var(--success-color);
-    font-weight: 600;
+    border-color: var(--success-color);
 }
-.saldo-negativo {
+.alert-danger {
+    background: rgba(220,53,69,0.08);
     color: var(--danger-color);
-    font-weight: 600;
+    border-color: var(--danger-color);
 }
-.saldo-zerado {
-    color: #888;
-    font-weight: 600;
+.alert-info {
+    background: rgba(13,202,240,0.07);
+    color: var(--primary-color);
 }
 
-/* Cards de estatísticas */
+/* ========== BADGES ========== */
+.badge.bg-primary { background-color: var(--primary-color) !important; }
+.badge.bg-secondary { background-color: #6c757d !important; }
+.badge.bg-success { background-color: var(--success-color) !important; }
+.badge.bg-danger { background-color: var(--danger-color) !important; }
+.badge.bg-dark { background-color: #222 !important; }
+
+/* ========== SALDOS ========= */
+.saldo-positivo   { color: var(--success-color); font-weight: 600; }
+.saldo-negativo   { color: var(--danger-color); font-weight: 600; }
+.saldo-zerado     { color: #888; font-weight: 600; }
+
+/* ========== TABELAS ========= */
+.table-hover tbody tr:hover {
+    background-color: #e4eee0;
+}
+
+/* ========== CARDS DE ESTATÍSTICAS ========== */
 .stat-card {
     text-align: center;
     padding: 1.5rem;
     border-radius: 12px;
-    background: #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    background: var(--card-bg);
+    box-shadow: var(--shadow);
     margin-bottom: 1rem;
 }
 .stat-card i, .stat-card .svg-inline--fa {
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
 }
-
 .stat-card .stat-value {
     font-size: 2rem;
     font-weight: 700;
@@ -98,20 +129,64 @@ body {
 }
 .stat-card .stat-label {
     color: #6c757d;
-    font-size: 0.9rem;
+    font-size: 0.96rem;
 }
 
-/* Ajuste para select2 em Bootstrap 5 */
+/* ========== SELECT2 + BOOTSTRAP ========== */
 .select2-container .select2-selection--single {
-    height: 38px;
-    padding: 5px 15px;
-    border-radius: 6px;
+    height: 38px !important;
+    padding: 5px 15px !important;
+    border-radius: 6px !important;
     border: 1px solid #ced4da;
-    font-size: 16px;
+    font-size: 16px !important;
+}
+.select2-container .select2-selection__rendered {
+    line-height: 26px !important;
+}
+/* Para o dropdown select2 não sumir atrás de modais */
+.select2-container {
+    z-index: 9999 !important;
 }
 
-/* Adicional para mobile-footer/margens */
+/* ========== FOOTER ========== */
 footer {
-    font-size: 0.95rem;
+    font-size: 0.97rem;
     letter-spacing: 0.02em;
+    background: #f5f7fa;
+    color: #687178;
+    border-top: 1px solid #eaeaea;
 }
+/* Footer responsivo */
+@media (max-width: 700px) {
+    footer {
+        font-size: 0.89rem;
+        padding: 12px 4px;
+    }
+}
+
+/* ========== DIALOG/MODAL DEVINFO ========== */
+dialog[open] {
+    display: block;
+    background: #fff;
+    border-radius: 10px;
+    max-width: 360px;
+    margin: 10vh auto;
+    box-shadow: var(--shadow);
+    animation: fadeInDialog 0.2s;
+}
+@keyframes fadeInDialog {
+    0% { transform: scale(0.98); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Adicionais de utilidade */
+a { transition: color .18s; }
+a:hover { color: var(--accent-color); }
+hr { color: #eaeaea; }
+
+/* Scroll e seleção modernos */
+::-webkit-scrollbar-thumb { background: var(--secondary-color); border-radius:8px; }
+::-webkit-scrollbar-track { background: #f5f7fa; }
+::-webkit-scrollbar { width: 8px; }
+/* Seleção suave */
+::selection { background: #cce2c7; color: #222; }

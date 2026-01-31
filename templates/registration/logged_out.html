@@ -1,6 +1,20 @@
 {% extends "base.html" %}
 
+{% block title %}Saiu do sistema{% endblock %}
+
 {% block content %}
-  <h2>Você saiu do sistema com sucesso.</h2>
-  <a href="{% url 'login' %}">Entrar novamente</a>
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 col-lg-4">
+        <div class="alert alert-info text-center shadow-sm">
+            <h2 class="mb-3"><i class="fas fa-sign-out-alt"></i> Logout realizado</h2>
+            <p>Você saiu do sistema com sucesso.</p>
+            <a href="{% url 'login' %}" class="btn btn-primary mt-3">
+                <i class="fas fa-sign-in-alt"></i> Entrar novamente
+            </a>
+        </div>
+        <div class="text-center mt-2">
+            <a href="/" class="small text-muted"><i class="fas fa-arrow-left"></i> Voltar para o início</a>
+        </div>
+    </div>
+</div>
 {% endblock %}

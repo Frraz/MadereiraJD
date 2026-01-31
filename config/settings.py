@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    "widget_tweaks",
     # Apps do projeto
     'apps.cadastros',
     'apps.romaneio',
