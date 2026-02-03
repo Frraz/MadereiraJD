@@ -51,3 +51,4 @@ jobs:
             sudo systemctl restart madereirajd
             echo 'Deploy finalizado com sucesso!'
           "
+          
