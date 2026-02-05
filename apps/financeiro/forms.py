@@ -8,10 +8,13 @@ class PagamentoForm(forms.ModelForm):
         model = Pagamento
         fields = ['data_pagamento', 'cliente', 'valor', 'tipo_pagamento', 'descricao']
         widgets = {
-            'data_pagamento': forms.DateInput(attrs={
-                'class': 'form-control',
-                'type': 'date'
-            }),
+            'data_pagamento': forms.DateInput(
+                format='%Y-%m-%d',
+                attrs={
+                    'class': 'form-control',
+                    'type': 'date'
+                }
+            ),
             'cliente': forms.Select(attrs={
                 'class': 'form-control select2',
             }),
@@ -34,6 +37,9 @@ class PagamentoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['cliente'].queryset = Cliente.objects.filter(ativo=True)
+        # Garante que a data apareça ao editar, no formato exigido pelo input date
+        if self.instance and self.instance.pk and self.instance.data_pagamento:
+            self.fields['data_pagamento'].initial = self.instance.data_pagamento.strftime('%Y-%m-%d')
 
     def clean_valor(self):
         valor = self.cleaned_data.get('valor')

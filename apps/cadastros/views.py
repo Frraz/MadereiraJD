@@ -12,6 +12,10 @@ from apps.romaneio.models import Romaneio
 
 from .forms import ClienteForm, TipoMadeiraForm, MotoristaForm
 from .models import Cliente, TipoMadeira, Motorista
+from django.db.models import ExpressionWrapper, DecimalField
+from decimal import Decimal
+from django.db.models import DecimalField, ExpressionWrapper, F, Subquery, Value
+from django.db.models.functions import Coalesce
 
 
 # ========== MIXINS ==========
@@ -56,10 +60,21 @@ class ClienteListView(LoginRequiredMixin, ListView):
         )
 
         qs = qs.annotate(
-            total_pagamentos=Coalesce(Subquery(pagamentos_sq, output_field=DecimalField(max_digits=15, decimal_places=2)), Value(0)),
-            total_vendas=Coalesce(Subquery(vendas_sq, output_field=DecimalField(max_digits=15, decimal_places=2)), Value(0)),
+            total_pagamentos=Coalesce(
+                Subquery(pagamentos_sq, output_field=DecimalField(max_digits=15, decimal_places=2)),
+                Value(Decimal("0.00")),
+                output_field=DecimalField(max_digits=15, decimal_places=2)
+            ),
+            total_vendas=Coalesce(
+                Subquery(vendas_sq, output_field=DecimalField(max_digits=15, decimal_places=2)),
+                Value(Decimal("0.00")),
+                output_field=DecimalField(max_digits=15, decimal_places=2)
+            )
         ).annotate(
-            saldo_calc=F("total_pagamentos") - F("total_vendas")
+            saldo_calc=ExpressionWrapper(
+                F("total_pagamentos") - F("total_vendas"),
+                output_field=DecimalField(max_digits=15, decimal_places=2)
+            )
         )
 
         # Filtro por saldo
