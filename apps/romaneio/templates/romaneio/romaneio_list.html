@@ -1,223 +1,393 @@
 {% extends 'base.html' %}
+
 {% block title %}Romaneios{% endblock %}
 
+{% block extra_css %}
+<style>
+  /* Melhora responsividade da tabela */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Badge customizado */
+  .badge-custom {
+    font-size: 0.85rem;
+    padding: 0.35em 0.65em;
+    font-weight: 500;
+  }
+
+  /* Hover effect nos cards de totais */
+  .total-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .total-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+
+  /* Links na tabela */
+  .romaneio-link {
+    color: #0d6efd;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .romaneio-link:hover {
+    color: #0a58ca;
+    text-decoration: underline;
+  }
+
+  /* Texto truncado com tooltip */
+  .text-truncate-hover {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Filtros mais compactos */
+  .filter-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+  }
+
+  /* Paginação responsiva */
+  @media (max-width: 576px) {
+    .pagination {
+      font-size: 0.875rem;
+    }
+    
+    .page-link {
+      padding: 0.375rem 0.75rem;
+    }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="card shadow-sm">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <span><i class="fas fa-file-invoice"></i> Lista de Romaneios</span>
+<div class="container-fluid">
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <h1 class="h3 mb-0">
+          <i class="fas fa-file-invoice text-primary"></i> Romaneios
+        </h1>
         <a href="{% url 'romaneio:romaneio_create' %}" class="btn btn-success">
-            <i class="fas fa-plus"></i> Novo Romaneio
+          <i class="fas fa-plus"></i> Novo Romaneio
         </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-header bg-white">
+      <h5 class="mb-0">
+        <i class="fas fa-filter"></i> Filtros e Pesquisa
+      </h5>
     </div>
 
     <div class="card-body">
-        <!-- Filtros -->
-        <form method="get" class="row gx-2 gy-2 mb-3 align-items-end">
-            <div class="col-md-2">
-                <label class="form-label small text-muted mb-1">Nº Romaneio</label>
-                <input type="text" name="numero" value="{{ request.GET.numero }}" class="form-control" placeholder="Ex: 11613">
-            </div>
+      <!-- Formulário de Filtros -->
+      <form method="get" class="row g-3 mb-4">
+        <div class="col-md-2 col-sm-6">
+          <label class="filter-label">Nº Romaneio</label>
+          <input type="text" 
+                 name="numero" 
+                 value="{{ request.GET.numero }}" 
+                 class="form-control" 
+                 placeholder="Ex: 11613">
+        </div>
 
-            <div class="col-md-3">
-                <label class="form-label small text-muted mb-1">Cliente</label>
-                <select name="cliente" class="form-select">
-                    <option value="">Todos os Clientes</option>
-                    {% for cliente in clientes %}
-                    <option value="{{ cliente.id }}" {% if cliente.id|stringformat:"s" == request.GET.cliente %}selected{% endif %}>
-                        {{ cliente.nome }}
-                    </option>
-                    {% endfor %}
-                </select>
-            </div>
+        <div class="col-md-3 col-sm-6">
+          <label class="filter-label">Cliente</label>
+          <select name="cliente" class="form-select">
+            <option value="">Todos os Clientes</option>
+            {% for cliente in clientes %}
+            <option value="{{ cliente.id }}" 
+                    {% if cliente.id|stringformat:"s" == request.GET.cliente %}selected{% endif %}>
+              {{ cliente.nome }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
 
-            <div class="col-md-2">
-                <label class="form-label small text-muted mb-1">Modalidade</label>
-                <select name="modalidade" class="form-select">
-                    <option value="">Todas</option>
-                    {% for value,label in modalidades %}
-                        <option value="{{ value }}" {% if request.GET.modalidade == value %}selected{% endif %}>
-                            {{ label }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
+        <div class="col-md-2 col-sm-6">
+          <label class="filter-label">Modalidade</label>
+          <select name="modalidade" class="form-select">
+            <option value="">Todas</option>
+            {% for value, label in modalidades %}
+            <option value="{{ value }}" 
+                    {% if request.GET.modalidade == value %}selected{% endif %}>
+              {{ label }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
 
-            <div class="col-md-2">
-                <label class="form-label small text-muted mb-1">Mês</label>
-                <select name="mes" class="form-select">
-                    <option value="">Todos</option>
-                    {% for m in meses %}
-                        <option value="{{ m }}" {% if m|stringformat:"s" == request.GET.mes %}selected{% endif %}>
-                            {{ m }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
+        <div class="col-md-2 col-sm-3">
+          <label class="filter-label">Mês</label>
+          <select name="mes" class="form-select">
+            <option value="">Todos</option>
+            {% for m in meses %}
+            <option value="{{ m }}" 
+                    {% if m|stringformat:"s" == request.GET.mes %}selected{% endif %}>
+              {{ m|stringformat:"02d" }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
 
-            <div class="col-md-2">
-                <label class="form-label small text-muted mb-1">Ano</label>
-                <select name="ano" class="form-select">
-                    <option value="">Todos</option>
-                    {% for ano in anos %}
-                        <option value="{{ ano }}" {% if request.GET.ano == ano|stringformat:"s" %}selected{% endif %}>{{ ano }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+        <div class="col-md-2 col-sm-3">
+          <label class="filter-label">Ano</label>
+          <select name="ano" class="form-select">
+            <option value="">Todos</option>
+            {% for ano in anos %}
+            <option value="{{ ano }}" 
+                    {% if request.GET.ano == ano|stringformat:"s" %}selected{% endif %}>
+              {{ ano }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
 
-            <div class="col-md-1 d-grid gap-2">
-                <button type="submit" class="btn btn-primary" title="Filtrar" aria-label="Filtrar">
-                    <i class="fas fa-filter"></i>
-                </button>
-                <a href="{% url 'romaneio:romaneio_list' %}" class="btn btn-outline-secondary btn-sm" title="Limpar filtros" aria-label="Limpar filtros">
-                    Limpar
+        <div class="col-md-1 col-sm-6 d-flex flex-column justify-content-end gap-2">
+          <button type="submit" class="btn btn-primary" title="Aplicar filtros">
+            <i class="fas fa-search"></i> Filtrar
+          </button>
+          <a href="{% url 'romaneio:romaneio_list' %}" 
+             class="btn btn-outline-secondary btn-sm" 
+             title="Limpar todos os filtros">
+            <i class="fas fa-times"></i> Limpar
+          </a>
+        </div>
+      </form>
+
+      <!-- Cards de Totais do Período -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-4 col-sm-6">
+          <div class="card total-card border-primary">
+            <div class="card-body text-center">
+              <h6 class="text-muted mb-2">
+                <i class="fas fa-file-invoice"></i> Total de Romaneios
+              </h6>
+              <h3 class="mb-0 text-primary">{{ page_obj.paginator.count }}</h3>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+          <div class="card total-card border-info">
+            <div class="card-body text-center">
+              <h6 class="text-muted mb-2">
+                <i class="fas fa-cube"></i> Total m³
+              </h6>
+              <h3 class="mb-0 text-info">{{ total_m3_periodo|floatformat:3 }}</h3>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-sm-12">
+          <div class="card total-card border-success">
+            <div class="card-body text-center">
+              <h6 class="text-muted mb-2">
+                <i class="fas fa-dollar-sign"></i> Total Valor
+              </h6>
+              <h3 class="mb-0 text-success">R$ {{ total_valor_periodo|floatformat:2 }}</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabela de Romaneios -->
+      <div class="table-responsive">
+        <table class="table table-hover table-striped align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th>Nº Romaneio</th>
+              <th>Data</th>
+              <th>Cliente</th>
+              <th>Motorista</th>
+              <th class="text-center">Tipo</th>
+              <th class="text-center">Modalidade</th>
+              <th class="text-end">Desconto</th>
+              <th class="text-end">m³</th>
+              <th class="text-end">Valor Total</th>
+              <th class="text-center">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for romaneio in romaneios %}
+            <tr>
+              <td>
+                <a href="{% url 'romaneio:romaneio_detail' romaneio.id %}"
+                   class="romaneio-link"
+                   title="Ver detalhes do romaneio #{{ romaneio.numero_romaneio }}">
+                  #{{ romaneio.numero_romaneio }}
                 </a>
-            </div>
-        </form>
+              </td>
 
-        <!-- Totais do período -->
-        <div class="mb-3 d-flex flex-wrap align-items-center gap-2">
-            <span class="badge bg-primary">
-                <i class="fas fa-cube"></i> Total m³: {{ total_m3_periodo|floatformat:3 }}
-            </span>
-            <span class="badge bg-success">
-                <i class="fas fa-dollar-sign"></i> Total Valor: R$ {{ total_valor_periodo|floatformat:2 }}
-            </span>
+              <td>
+                <span class="text-nowrap">
+                  <i class="far fa-calendar-alt text-muted"></i>
+                  {{ romaneio.data_romaneio|date:"d/m/Y" }}
+                </span>
+              </td>
 
-            {# Atenção: romaneios|length só conta os itens da PÁGINA atual.
-               Para contar total do filtro, o ideal seria passar page_obj.paginator.count no context. #}
-            <span class="text-muted ms-1">
-                ({{ page_obj.paginator.count }} romaneios)
-            </span>
-        </div>
+              <td>
+                <span class="text-truncate-hover d-inline-block" 
+                      style="max-width: 200px;" 
+                      title="{{ romaneio.cliente.nome }}">
+                  {{ romaneio.cliente.nome }}
+                </span>
+              </td>
 
-        <!-- Tabela de romaneios -->
-        <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>Nº</th>
-                        <th>Data</th>
-                        <th>Cliente</th>
-                        <th>Motorista</th>
-                        <th>Tipo</th>
-                        <th>Modalidade</th>
-                        <th class="text-end">Desconto</th>
-                        <th class="text-end">m³</th>
-                        <th class="text-end">Valor</th>
-                        <th class="text-end">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for romaneio in romaneios %}
-                    <tr>
-                        <td>
-                            <a href="{% url 'romaneio:romaneio_detail' romaneio.id %}"
-                               class="fw-bold text-decoration-none"
-                               title="Ver detalhes do romaneio {{ romaneio.numero_romaneio }}">
-                                {{ romaneio.numero_romaneio }}
-                            </a>
-                        </td>
+              <td>
+                <span class="text-truncate-hover d-inline-block" 
+                      style="max-width: 180px;" 
+                      title="{{ romaneio.motorista.nome|default:'Não informado' }}">
+                  {{ romaneio.motorista.nome|default:"—" }}
+                </span>
+              </td>
 
-                        <td>{{ romaneio.data_romaneio|date:"d/m/Y" }}</td>
-
-                        <td class="text-truncate" style="max-width: 260px;">
-                            {{ romaneio.cliente.nome }}
-                        </td>
-
-                        <td class="text-truncate" style="max-width: 200px;">
-                            {{ romaneio.motorista.nome|default:"—" }}
-                        </td>
-
-                        <td>
-                            <span class="badge {% if romaneio.tipo_romaneio == 'NORMAL' %}bg-primary{% else %}bg-warning text-dark{% endif %}">
-                                {{ romaneio.get_tipo_romaneio_display|default:"—" }}
-                            </span>
-                        </td>
-
-                        <td>
-                            <span class="badge {% if romaneio.modalidade == 'DETALHADO' %}bg-dark{% else %}bg-secondary{% endif %}">
-                                {{ romaneio.get_modalidade_display|default:"—" }}
-                            </span>
-                        </td>
-
-                        <td class="text-end">
-                            {% if romaneio.desconto and romaneio.desconto != 0 %}
-                                {{ romaneio.desconto|floatformat:2 }}%
-                            {% else %}
-                                —
-                            {% endif %}
-                        </td>
-
-                        <td class="text-end">{{ romaneio.m3_total|floatformat:3 }}</td>
-                        <td class="text-end">R$ {{ romaneio.valor_total|floatformat:2 }}</td>
-
-                        <td class="text-end">
-                            <div class="btn-group" role="group" aria-label="Ações do romaneio">
-                                <a href="{% url 'romaneio:romaneio_detail' romaneio.id %}"
-                                   class="btn btn-sm btn-outline-secondary"
-                                   title="Ver detalhes"
-                                   aria-label="Ver detalhes">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="{% url 'romaneio:romaneio_update' romaneio.id %}"
-                                   class="btn btn-sm btn-primary"
-                                   title="Editar"
-                                   aria-label="Editar">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="10" class="text-center text-muted">
-                            Nenhum romaneio encontrado para os filtros aplicados.
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Paginação -->
-        {% if is_paginated %}
-        {% with params=request.GET.urlencode %}
-        <nav aria-label="Paginação de romaneios">
-            <ul class="pagination justify-content-center flex-wrap">
-
-                {% if page_obj.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?page=1{% if params %}&{{ params|cut:'page=' }}{% endif %}" aria-label="Primeira página">
-                        &laquo;
-                    </a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if params %}&{{ params|cut:'page=' }}{% endif %}" aria-label="Página anterior">
-                        &lsaquo;
-                    </a>
-                </li>
+              <td class="text-center">
+                {% if romaneio.tipo_romaneio == 'NORMAL' %}
+                <span class="badge bg-primary badge-custom">
+                  <i class="fas fa-truck"></i> Normal
+                </span>
+                {% else %}
+                <span class="badge bg-warning text-dark badge-custom">
+                  <i class="fas fa-shipping-fast"></i> Com Frete
+                </span>
                 {% endif %}
+              </td>
 
-                <li class="page-item disabled">
-                    <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
-                </li>
-
-                {% if page_obj.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if params %}&{{ params|cut:'page=' }}{% endif %}" aria-label="Próxima página">
-                        &rsaquo;
-                    </a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if params %}&{{ params|cut:'page=' }}{% endif %}" aria-label="Última página">
-                        &raquo;
-                    </a>
-                </li>
+              <td class="text-center">
+                {% if romaneio.modalidade == 'DETALHADO' %}
+                <span class="badge bg-dark badge-custom">
+                  <i class="fas fa-list-ul"></i> Detalhado
+                </span>
+                {% else %}
+                <span class="badge bg-secondary badge-custom">
+                  <i class="fas fa-file"></i> Simples
+                </span>
                 {% endif %}
-            </ul>
-        </nav>
-        {% endwith %}
-        {% endif %}
+              </td>
+
+              <td class="text-end">
+                {% if romaneio.desconto and romaneio.desconto > 0 %}
+                <span class="text-danger">
+                  <i class="fas fa-percent"></i> {{ romaneio.desconto|floatformat:2 }}%
+                </span>
+                {% else %}
+                <span class="text-muted">—</span>
+                {% endif %}
+              </td>
+
+              <td class="text-end fw-bold">
+                {{ romaneio.m3_total|floatformat:3 }}
+              </td>
+
+              <td class="text-end fw-bold text-success">
+                R$ {{ romaneio.valor_total|floatformat:2 }}
+              </td>
+
+              <td class="text-center">
+                <div class="btn-group" role="group">
+                  <a href="{% url 'romaneio:romaneio_detail' romaneio.id %}"
+                     class="btn btn-sm btn-outline-info"
+                     title="Ver detalhes">
+                    <i class="fas fa-eye"></i>
+                  </a>
+                  <a href="{% url 'romaneio:romaneio_update' romaneio.id %}"
+                     class="btn btn-sm btn-outline-primary"
+                     title="Editar romaneio">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="10" class="text-center py-5">
+                <div class="text-muted">
+                  <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                  <h5>Nenhum romaneio encontrado</h5>
+                  <p class="mb-0">Tente ajustar os filtros ou 
+                    <a href="{% url 'romaneio:romaneio_create' %}">criar um novo romaneio</a>.
+                  </p>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginação -->
+      {% if is_paginated %}
+      <nav aria-label="Navegação de páginas" class="mt-4">
+        <ul class="pagination justify-content-center flex-wrap">
+          {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" 
+               href="?page=1{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}" 
+               aria-label="Primeira página">
+              <i class="fas fa-angle-double-left"></i>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" 
+               href="?page={{ page_obj.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}" 
+               aria-label="Página anterior">
+              <i class="fas fa-angle-left"></i>
+            </a>
+          </li>
+          {% else %}
+          <li class="page-item disabled">
+            <span class="page-link"><i class="fas fa-angle-double-left"></i></span>
+          </li>
+          <li class="page-item disabled">
+            <span class="page-link"><i class="fas fa-angle-left"></i></span>
+          </li>
+          {% endif %}
+
+          <li class="page-item active">
+            <span class="page-link">
+              Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+            </span>
+          </li>
+
+          {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" 
+               href="?page={{ page_obj.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}" 
+               aria-label="Próxima página">
+              <i class="fas fa-angle-right"></i>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" 
+               href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}" 
+               aria-label="Última página">
+              <i class="fas fa-angle-double-right"></i>
+            </a>
+          </li>
+          {% else %}
+          <li class="page-item disabled">
+            <span class="page-link"><i class="fas fa-angle-right"></i></span>
+          </li>
+          <li class="page-item disabled">
+            <span class="page-link"><i class="fas fa-angle-double-right"></i></span>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+      {% endif %}
     </div>
+  </div>
 </div>
 {% endblock %}

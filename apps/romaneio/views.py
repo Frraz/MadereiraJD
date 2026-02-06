@@ -38,7 +38,7 @@ class RomaneioListView(LoginRequiredMixin, ListView):
     paginate_by = 20
 
     def get_queryset(self):
-        qs = self.model.objects.select_related("cliente", "motorista")
+        qs = self.model.objects.select_related("cliente", "motorista").order_by("-data_romaneio", "-id")
 
         mes = self.request.GET.get("mes")
         ano = self.request.GET.get("ano")
@@ -145,46 +145,90 @@ class RomaneioCreateView(LoginRequiredMixin, _RomaneioFormsetsMixin, CreateView)
         self.object = None
         form = self.get_form()
 
-        formset = ItemRomaneioFormSet(request.POST)
-        unidades_formsets_preview = self._build_unidades_formsets(formset)
+        # DEBUG: Mostra o que está chegando no POST
+        print("\n" + "=" * 80)
+        print("🔍 DEBUG - POST DATA (unidades):")
+        for key, value in request.POST.items():
+            if 'unidades' in key:
+                print(f"  {key}: {value}")
+        print("=" * 80 + "\n")
 
-        # Validação inicial: romaneio + itens
-        if not (form.is_valid() and formset.is_valid()):
+        formset = ItemRomaneioFormSet(request.POST)
+
+        # Constrói unidades_formsets SEM salvar itens ainda
+        unidades_formsets_preview = []
+        for i in range(len(formset.forms)):
+            prefix = f"unidades-{i}"
+            uf = UnidadeRomaneioFormSet(request.POST, instance=None, prefix=prefix)
+            unidades_formsets_preview.append(uf)
+            
+            # DEBUG: Mostra se o formset de unidades é válido
+            print(f"🔍 Unidades formset {i} (prefix={prefix}):")
+            print(f"   - is_valid: {uf.is_valid()}")
+            print(f"   - forms count: {len(uf.forms)}")
+            if not uf.is_valid():
+                print(f"   - errors: {uf.errors}")
+                print(f"   - non_form_errors: {uf.non_form_errors()}")
+
+        # Validação COMPLETA
+        form_valid = form.is_valid()
+        formset_valid = formset.is_valid()
+        unidades_valid = all(uf.is_valid() for uf in unidades_formsets_preview)
+
+        print(f"\n✅ Validação:")
+        print(f"   - form_valid: {form_valid}")
+        print(f"   - formset_valid: {formset_valid}")
+        print(f"   - unidades_valid: {unidades_valid}")
+
+        # VALIDAÇÃO MANUAL: se DETALHADO, cada item DEVE ter pelo menos 1 unidade
+        if form_valid and form.cleaned_data.get('modalidade') == 'DETALHADO':
+            print("\n🔍 Modalidade DETALHADO - validando unidades...")
+            for i, uf in enumerate(unidades_formsets_preview):
+                valid_units = sum(
+                    1 for f in uf.forms 
+                    if f.is_valid() and not f.cleaned_data.get('DELETE', False)
+                )
+                print(f"   - Item {i}: {valid_units} unidades válidas")
+                
+                if valid_units == 0:
+                    print(f"   ❌ Item {i} não tem unidades!")
+                    uf._non_form_errors.append("No modo DETALHADO, cada tipo de madeira deve ter pelo menos uma unidade.")
+                    unidades_valid = False
+
+        if not (form_valid and formset_valid and unidades_valid):
+            print("\n❌ Validação falhou - renderizando form com erros\n")
             context = self.get_context_data(form=form)
             context = self._inject_formsets_into_context(
                 context, formset=formset, unidades_formsets=unidades_formsets_preview
             )
             return self.render_to_response(context)
 
-        # Salva romaneio
+        print("\n✅ Todas validações OK - salvando...\n")
+
+        # Tudo válido: salva romaneio
         self.object = form.save(commit=False)
         self.object.usuario_cadastro = request.user
         self.object.save()
+        print(f"✅ Romaneio salvo: {self.object.pk}")
 
-        # Salva itens (agora com romaneio_id)
+        # Salva itens
         formset.instance = self.object
         itens = formset.save()
+        print(f"✅ {len(itens)} itens salvos")
 
-        # Recria unidades_formsets com instance correta de cada item e valida
-        unidades_formsets = []
+        # Salva unidades
         for i, item in enumerate(itens):
             prefix = f"unidades-{i}"
             uf = UnidadeRomaneioFormSet(request.POST, instance=item, prefix=prefix)
-            unidades_formsets.append(uf)
+            if uf.is_valid():
+                unidades_salvas = uf.save()
+                print(f"✅ Item {i}: {len(unidades_salvas)} unidades salvas")
+            else:
+                print(f"❌ Item {i}: erro ao salvar unidades - {uf.errors}")
 
-        if not all(uf.is_valid() for uf in unidades_formsets):
-            context = self.get_context_data(form=form)
-            context = self._inject_formsets_into_context(
-                context, formset=formset, unidades_formsets=unidades_formsets
-            )
-            return self.render_to_response(context)
-
-        # Salva unidades
-        for uf in unidades_formsets:
-            uf.save()
-
-        # Recalcula totais finais (garante consistência)
+        # Recalcula totais
         self.object.atualizar_totais()
+        print(f"✅ Totais atualizados\n")
 
         messages.success(request, f"Romaneio {self.object.numero_romaneio} cadastrado com sucesso!")
         return redirect(self.get_success_url())
@@ -206,42 +250,37 @@ class RomaneioUpdateView(LoginRequiredMixin, _RomaneioFormsetsMixin, UpdateView)
         form = self.get_form()
 
         formset = ItemRomaneioFormSet(request.POST, instance=self.object)
-        unidades_formsets = self._build_unidades_formsets(formset)
 
-        # Validação inicial
-        if not (form.is_valid() and formset.is_valid() and all(uf.is_valid() for uf in unidades_formsets)):
+        unidades_formsets = []
+        for i, item_form in enumerate(formset.forms):
+            prefix = f"unidades-{i}"
+            instance = item_form.instance if getattr(item_form.instance, "pk", None) else None
+            uf = UnidadeRomaneioFormSet(request.POST, instance=instance, prefix=prefix)
+            unidades_formsets.append(uf)
+
+        # Validação completa
+        form_valid = form.is_valid()
+        formset_valid = formset.is_valid()
+        unidades_valid = all(uf.is_valid() for uf in unidades_formsets)
+
+        if not (form_valid and formset_valid and unidades_valid):
             context = self.get_context_data(form=form)
             context = self._inject_formsets_into_context(
                 context, formset=formset, unidades_formsets=unidades_formsets
             )
             return self.render_to_response(context)
 
-        # Salva romaneio
+        # Salva
         self.object = form.save()
-
-        # Salva itens
         formset.instance = self.object
         itens = formset.save()
 
-        # Reconstrói unidades_formsets para itens salvos (garante pk correto)
-        rebuilt_ufs = []
         for i, item in enumerate(itens):
             prefix = f"unidades-{i}"
-            rebuilt_ufs.append(UnidadeRomaneioFormSet(request.POST, instance=item, prefix=prefix))
+            uf = UnidadeRomaneioFormSet(request.POST, instance=item, prefix=prefix)
+            if uf.is_valid():
+                uf.save()
 
-        # Valida novamente (caso tenha criado itens novos)
-        if not all(uf.is_valid() for uf in rebuilt_ufs):
-            context = self.get_context_data(form=form)
-            context = self._inject_formsets_into_context(
-                context, formset=formset, unidades_formsets=rebuilt_ufs
-            )
-            return self.render_to_response(context)
-
-        # Salva unidades
-        for uf in rebuilt_ufs:
-            uf.save()
-
-        # Recalcula totais
         self.object.atualizar_totais()
 
         messages.success(request, f"Romaneio {self.object.numero_romaneio} atualizado com sucesso!")
@@ -265,7 +304,7 @@ def get_preco_madeira(request):
     """
     tipo_madeira_id = request.GET.get("tipo_madeira_id")
     tipo_romaneio = request.GET.get("tipo_romaneio")
-    
+
     try:
         tipo_madeira = TipoMadeira.objects.get(id=tipo_madeira_id)
         preco = tipo_madeira.get_preco(tipo_romaneio)

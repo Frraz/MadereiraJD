@@ -6,6 +6,7 @@
 
 {% block extra_css %}
 <style>
+  /* ===== ESTILOS DOS ITENS (TIPOS DE MADEIRA) ===== */
   .item-row {
     padding: 1.5rem;
     margin-bottom: 1.5rem;
@@ -15,6 +16,7 @@
     position: relative;
     transition: all .3s;
   }
+  
   .item-row:hover {
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     border-color: #037b15;
@@ -50,11 +52,38 @@
     cursor: pointer;
     transition: all .2s;
   }
+  
   .delete-item:hover {
     background: #c82333;
     transform: scale(1.05);
   }
 
+  .item-totals {
+    background: #e7f3ff;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .total-m3-item { 
+    color: #0d6efd; 
+    font-size: 1.1rem; 
+    white-space: nowrap; 
+  }
+  
+  .total-valor-item { 
+    color: #198754; 
+    font-size: 1.2rem; 
+    white-space: nowrap; 
+  }
+
+  /* ===== ESTILOS DAS UNIDADES (TORAS) ===== */
   .unidades-container {
     margin-top: 1rem;
     padding: 1rem;
@@ -71,6 +100,7 @@
     position: relative;
     transition: box-shadow .2s;
   }
+  
   .unidade-row:hover {
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   }
@@ -89,38 +119,21 @@
     font-weight: 500;
   }
 
-  .item-totals {
-    background: #e7f3ff;
-    padding: 0.75rem 1rem;
-    border-radius: 6px;
-    margin-top: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: 600;
-    gap: 1rem;
-    flex-wrap: wrap;
+  /* ===== MODO DETALHADO ===== */
+  .detalhado-only { 
+    display: none; 
+  }
+  
+  body.modo-detalhado .detalhado-only { 
+    display: block; 
   }
 
-  .total-m3-item { color: #0d6efd; font-size: 1.1rem; white-space: nowrap; }
-  .total-valor-item { color: #198754; font-size: 1.2rem; white-space: nowrap; }
-
-  #total-geral {
-    font-size: 2rem;
-    font-weight: bold;
-    color: var(--primary-color);
-  }
-
-  /* Exibição por modalidade */
-  .detalhado-only { display: none; }
-  body.modo-detalhado .detalhado-only { display: block; }
-
-  /* Campo calculado */
   .campo-m3-detalhado {
     background-color: #e9ecef;
     cursor: not-allowed;
   }
 
+  /* ===== BADGES E TOTAIS ===== */
   .badge-unidades {
     background: #e9ecef;
     color: #495057;
@@ -132,15 +145,31 @@
     white-space: nowrap;
   }
 
-  .tipo-madeira-wrapper select { background-color: #fff; }
+  #total-geral {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+  }
+
+  /* ===== SELECT2 ===== */
+  .tipo-madeira-wrapper select { 
+    background-color: #fff; 
+  }
+  
   .tipo-madeira-wrapper select:focus {
     border-color: #0d6efd;
     box-shadow: 0 0 0 .2rem rgba(13,110,253,.15);
   }
 
-  .select2-container { width: 100% !important; }
+  .select2-container { 
+    width: 100% !important; 
+  }
 
-  #empty-item-template, #empty-item-detalhado-template { display: none; }
+  /* ===== TEMPLATES OCULTOS ===== */
+  #empty-item-template, 
+  #empty-item-detalhado-template { 
+    display: none; 
+  }
 </style>
 {% endblock %}
 
@@ -168,6 +197,7 @@
   </div>
   {% endif %}
 
+  <!-- ===== DADOS DO ROMANEIO ===== -->
   <div class="row">
     <div class="col-md-8">
       <div class="card mb-4">
@@ -184,7 +214,8 @@
 
             <div class="col-md-3">
               <label class="form-label">Data *</label>
-              <input type="date" name="{{ form.data_romaneio.name }}"
+              <input type="date" 
+                     name="{{ form.data_romaneio.name }}"
                      class="form-control"
                      id="id_data_romaneio"
                      value="{{ form.data_romaneio.value|date:'Y-m-d' }}"
@@ -220,6 +251,7 @@
       </div>
     </div>
 
+    <!-- ===== RESUMO DO ROMANEIO ===== -->
     <div class="col-md-4">
       <div class="card mb-4">
         <div class="card-header bg-success text-white">
@@ -236,6 +268,7 @@
     </div>
   </div>
 
+  <!-- ===== ITENS DO ROMANEIO ===== -->
   <div class="card mb-4">
     <div class="card-header bg-dark text-white">
       <i class="fas fa-list"></i> Itens do Romaneio (Tipos de Madeira)
@@ -254,7 +287,7 @@
         {% for f, uf in itens_com_unidades %}
         <div class="item-row" data-item-index="{{ forloop.counter0 }}">
           {% if formset.can_delete %}
-          <button type="button" class="delete-item" onclick="removerItem(this)" title="Remover tipo de madeira" aria-label="Remover tipo de madeira">
+          <button type="button" class="delete-item" onclick="removerItem(this)" title="Remover tipo de madeira">
             <i class="fas fa-times"></i>
           </button>
           <div class="d-none">{{ f.DELETE }}</div>
@@ -264,7 +297,9 @@
 
           <div class="item-header">
             <span><i class="fas fa-tree"></i> Tipo de Madeira</span>
-            <span class="badge-unidades"><span class="js-badge-unidades" data-item-index="{{ forloop.counter0 }}">0</span> unidades</span>
+            <span class="badge-unidades">
+              <span class="js-badge-unidades" data-item-index="{{ forloop.counter0 }}">0</span> unidades
+            </span>
           </div>
 
           <div class="row g-3 mb-3">
@@ -290,6 +325,7 @@
             </div>
           </div>
 
+          <!-- ===== UNIDADES (TORAS) ===== -->
           <div class="unidades-container detalhado-only">
             <div class="d-flex justify-content-between align-items-center mb-2">
               <h6 class="m-0"><i class="fas fa-cubes"></i> Unidades (Toras)</h6>
@@ -354,37 +390,58 @@
               {% endfor %}
             </div>
 
+            <!-- Template para novas unidades -->
             <template class="empty-unidade-form-template" data-item-index="{{ forloop.counter0 }}">
-              <div class="unidade-row" data-item-index="{{ forloop.counter0 }}" data-unidade-index="__prefix__">
-                {% if uf.can_delete %}
+              <div class="unidade-row" data-item-index="__item_idx__" data-unidade-index="__unidade_idx__">
                 <button type="button" class="btn btn-sm btn-danger delete-unidade" onclick="removerUnidade(this)">
                   <i class="fas fa-trash"></i>
                 </button>
-                <div class="d-none">{{ uf.empty_form.DELETE }}</div>
-                {% endif %}
+                <div class="d-none">
+                  <input type="checkbox" name="unidades-__item_idx__-__unidade_idx__-DELETE" id="id_unidades-__item_idx__-__unidade_idx__-DELETE">
+                </div>
 
-                {{ uf.empty_form.id }}
+                <input type="hidden" name="unidades-__item_idx__-__unidade_idx__-id" id="id_unidades-__item_idx__-__unidade_idx__-id">
 
                 <div class="row g-2 align-items-end">
                   <div class="col-md-2">
                     <label class="form-label small">Comprimento (m) *</label>
-                    {{ uf.empty_form.comprimento }}
+                    <input type="number" 
+                           name="unidades-__item_idx__-__unidade_idx__-comprimento" 
+                           class="form-control form-control-sm campo-detalhado campo-unidade" 
+                           step="0.01" min="0.01" placeholder="Ex: 3.00" 
+                           id="id_unidades-__item_idx__-__unidade_idx__-comprimento">
                   </div>
                   <div class="col-md-2">
                     <label class="form-label small">Rôdo (cm) *</label>
-                    {{ uf.empty_form.rodo }}
+                    <input type="number" 
+                           name="unidades-__item_idx__-__unidade_idx__-rodo" 
+                           class="form-control form-control-sm campo-detalhado campo-unidade" 
+                           step="0.01" min="0.01" placeholder="Ex: 40.00" 
+                           id="id_unidades-__item_idx__-__unidade_idx__-rodo">
                   </div>
                   <div class="col-md-2">
                     <label class="form-label small">Desc. 1 (cm)</label>
-                    {{ uf.empty_form.desconto_1 }}
+                    <input type="number" 
+                           name="unidades-__item_idx__-__unidade_idx__-desconto_1" 
+                           class="form-control form-control-sm campo-detalhado campo-unidade" 
+                           step="0.01" min="0.00" value="0.00" placeholder="0.00" 
+                           id="id_unidades-__item_idx__-__unidade_idx__-desconto_1">
                   </div>
                   <div class="col-md-2">
                     <label class="form-label small">Desc. 2 (cm)</label>
-                    {{ uf.empty_form.desconto_2 }}
+                    <input type="number" 
+                           name="unidades-__item_idx__-__unidade_idx__-desconto_2" 
+                           class="form-control form-control-sm campo-detalhado campo-unidade" 
+                           step="0.01" min="0.00" value="0.00" placeholder="0.00" 
+                           id="id_unidades-__item_idx__-__unidade_idx__-desconto_2">
                   </div>
                   <div class="col-md-2">
                     <label class="form-label small">Quantidade (m³) *</label>
-                    {{ uf.empty_form.quantidade_m3 }}
+                    <input type="number" 
+                           name="unidades-__item_idx__-__unidade_idx__-quantidade_m3" 
+                           class="form-control form-control-sm campo-unidade quantidade-m3" 
+                           step="0.001" min="0.001" placeholder="0.000" 
+                           id="id_unidades-__item_idx__-__unidade_idx__-quantidade_m3">
                   </div>
                   <div class="col-md-2">
                     <label class="form-label small">Valor Unidade</label>
@@ -394,13 +451,12 @@
               </div>
             </template>
 
-            <button type="button"
-                    class="btn btn-outline-success add-unidade-btn"
-                    onclick="adicionarUnidade({{ forloop.counter0 }})">
+            <button type="button" class="btn btn-outline-success add-unidade-btn" onclick="adicionarUnidade({{ forloop.counter0 }})">
               <i class="fas fa-plus"></i> Adicionar Unidade
             </button>
           </div>
 
+          <!-- Totais do item -->
           <div class="item-totals">
             <div>
               <i class="fas fa-cube"></i> Total de Unidades:
@@ -412,7 +468,6 @@
               <span class="total-valor-item" data-item-index="{{ forloop.counter0 }}">R$ 0,00</span>
             </div>
           </div>
-
         </div>
         {% endfor %}
       </div>
@@ -422,11 +477,13 @@
       </button>
 
       <div class="form-text mt-2">
-        Dica: no modo <strong>Detalhado</strong>, adicione unidades (toras) e o sistema calcula automaticamente o m³.
+        <i class="fas fa-info-circle"></i> 
+        No modo <strong>Detalhado</strong>, adicione unidades (toras) e o sistema calcula automaticamente o m³.
       </div>
     </div>
   </div>
 
+  <!-- ===== BOTÕES DE AÇÃO ===== -->
   <div class="row">
     <div class="col-12 d-flex flex-wrap gap-3">
       <button type="submit" class="btn btn-success btn-lg">
@@ -439,11 +496,11 @@
   </div>
 </form>
 
-<!-- TEMPLATE VAZIO PARA ITEM (SIMPLES) -->
+<!-- ===== TEMPLATES OCULTOS ===== -->
 <div id="empty-item-template">
   <div class="item-row" data-item-index="__prefix__">
     {% if formset.can_delete %}
-    <button type="button" class="delete-item" onclick="removerItem(this)" title="Remover tipo de madeira" aria-label="Remover tipo de madeira">
+    <button type="button" class="delete-item" onclick="removerItem(this)" title="Remover tipo de madeira">
       <i class="fas fa-times"></i>
     </button>
     <div class="d-none">{{ formset.empty_form.DELETE }}</div>
@@ -453,7 +510,9 @@
 
     <div class="item-header">
       <span><i class="fas fa-tree"></i> Tipo de Madeira</span>
-      <span class="badge-unidades"><span class="js-badge-unidades" data-item-index="__prefix__">0</span> unidades</span>
+      <span class="badge-unidades">
+        <span class="js-badge-unidades" data-item-index="__prefix__">0</span> unidades
+      </span>
     </div>
 
     <div class="row g-3 mb-3">
@@ -489,11 +548,10 @@
   </div>
 </div>
 
-<!-- TEMPLATE VAZIO PARA ITEM (DETALHADO) -->
 <div id="empty-item-detalhado-template">
   <div class="item-row" data-item-index="__prefix__">
     {% if formset.can_delete %}
-    <button type="button" class="delete-item" onclick="removerItem(this)" title="Remover tipo de madeira" aria-label="Remover tipo de madeira">
+    <button type="button" class="delete-item" onclick="removerItem(this)" title="Remover tipo de madeira">
       <i class="fas fa-times"></i>
     </button>
     <div class="d-none">{{ formset.empty_form.DELETE }}</div>
@@ -503,7 +561,9 @@
 
     <div class="item-header">
       <span><i class="fas fa-tree"></i> Tipo de Madeira</span>
-      <span class="badge-unidades"><span class="js-badge-unidades" data-item-index="__prefix__">0</span> unidades</span>
+      <span class="badge-unidades">
+        <span class="js-badge-unidades" data-item-index="__prefix__">0</span> unidades
+      </span>
     </div>
 
     <div class="row g-3 mb-3">
@@ -525,23 +585,79 @@
       </div>
     </div>
 
-    <!-- Container de unidades para DETALHADO -->
     <div class="unidades-container detalhado-only">
       <div class="d-flex justify-content-between align-items-center mb-2">
         <h6 class="m-0"><i class="fas fa-cubes"></i> Unidades (Toras)</h6>
       </div>
 
-      <!-- Management form das unidades -->
       <input type="hidden" name="unidades-__prefix__-TOTAL_FORMS" value="0" id="id_unidades-__prefix__-TOTAL_FORMS">
       <input type="hidden" name="unidades-__prefix__-INITIAL_FORMS" value="0" id="id_unidades-__prefix__-INITIAL_FORMS">
-      <input type="hidden" name="unidades-__prefix__-MIN_NUM_FORMS" value="1" id="id_unidades-__prefix__-MIN_NUM_FORMS">
+      <input type="hidden" name="unidades-__prefix__-MIN_NUM_FORMS" value="0" id="id_unidades-__prefix__-MIN_NUM_FORMS">
       <input type="hidden" name="unidades-__prefix__-MAX_NUM_FORMS" value="1000" id="id_unidades-__prefix__-MAX_NUM_FORMS">
 
       <div class="unidades-list" data-item-index="__prefix__"></div>
 
-      <button type="button"
-              class="btn btn-outline-success add-unidade-btn"
-              onclick="adicionarUnidade(__prefix__)">
+      <template class="empty-unidade-form-template" data-item-index="__prefix__">
+        <div class="unidade-row" data-item-index="__item_idx__" data-unidade-index="__unidade_idx__">
+          <button type="button" class="btn btn-sm btn-danger delete-unidade" onclick="removerUnidade(this)">
+            <i class="fas fa-trash"></i>
+          </button>
+          <div class="d-none">
+            <input type="checkbox" name="unidades-__item_idx__-__unidade_idx__-DELETE" id="id_unidades-__item_idx__-__unidade_idx__-DELETE">
+          </div>
+
+          <input type="hidden" name="unidades-__item_idx__-__unidade_idx__-id" id="id_unidades-__item_idx__-__unidade_idx__-id">
+
+          <div class="row g-2 align-items-end">
+            <div class="col-md-2">
+              <label class="form-label small">Comprimento (m) *</label>
+              <input type="number" 
+                     name="unidades-__item_idx__-__unidade_idx__-comprimento" 
+                     class="form-control form-control-sm campo-detalhado campo-unidade" 
+                     step="0.01" min="0.01" placeholder="Ex: 3.00" 
+                     id="id_unidades-__item_idx__-__unidade_idx__-comprimento">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label small">Rôdo (cm) *</label>
+              <input type="number" 
+                     name="unidades-__item_idx__-__unidade_idx__-rodo" 
+                     class="form-control form-control-sm campo-detalhado campo-unidade" 
+                     step="0.01" min="0.01" placeholder="Ex: 40.00" 
+                     id="id_unidades-__item_idx__-__unidade_idx__-rodo">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label small">Desc. 1 (cm)</label>
+              <input type="number" 
+                     name="unidades-__item_idx__-__unidade_idx__-desconto_1" 
+                     class="form-control form-control-sm campo-detalhado campo-unidade" 
+                     step="0.01" min="0.00" value="0.00" placeholder="0.00" 
+                     id="id_unidades-__item_idx__-__unidade_idx__-desconto_1">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label small">Desc. 2 (cm)</label>
+              <input type="number" 
+                     name="unidades-__item_idx__-__unidade_idx__-desconto_2" 
+                     class="form-control form-control-sm campo-detalhado campo-unidade" 
+                     step="0.01" min="0.00" value="0.00" placeholder="0.00" 
+                     id="id_unidades-__item_idx__-__unidade_idx__-desconto_2">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label small">Quantidade (m³) *</label>
+              <input type="number" 
+                     name="unidades-__item_idx__-__unidade_idx__-quantidade_m3" 
+                     class="form-control form-control-sm campo-unidade quantidade-m3" 
+                     step="0.001" min="0.001" placeholder="0.000" 
+                     id="id_unidades-__item_idx__-__unidade_idx__-quantidade_m3">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label small">Valor Unidade</label>
+              <div class="form-control form-control-sm bg-light valor-unidade-display">R$ 0,00</div>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <button type="button" class="btn btn-outline-success add-unidade-btn" onclick="adicionarUnidade(__prefix__)">
         <i class="fas fa-plus"></i> Adicionar Unidade
       </button>
     </div>
@@ -559,14 +675,13 @@
     </div>
   </div>
 </div>
-
 {% endblock %}
 
 {% block extra_js %}
 <script>
   const precosMadeiras = {{ tipos_madeira_json|safe }};
-  let unidadeIndexCounters = {}; // Guarda o contador de unidades por item
 
+  // ===== FUNÇÕES AUXILIARES =====
   function getModo() {
     return $('#id_modalidade').val();
   }
@@ -581,12 +696,22 @@
         $select.select2('destroy');
       }
 
-      const $parent = $select.closest('.item-row').length ? $select.closest('.item-row') : $(document.body);
+      $select.removeAttr('data-select2-id');
 
-      $select.select2({
-        width: '100%',
-        dropdownParent: $parent
-      });
+      const $parent = $select.closest('.item-row').length 
+        ? $select.closest('.item-row') 
+        : $(document.body);
+
+      try {
+        $select.select2({
+          width: '100%',
+          placeholder: 'Selecione...',
+          allowClear: false,
+          dropdownParent: $parent
+        });
+      } catch (e) {
+        console.error('Erro ao inicializar Select2:', e);
+      }
     });
   }
 
@@ -629,25 +754,40 @@
     recalcularTudo();
   }
 
+  // ===== GERENCIAMENTO DE ITENS =====
   function adicionarItem() {
     const totalFormsInput = document.getElementById('id_{{ formset.prefix }}-TOTAL_FORMS');
     const index = parseInt(totalFormsInput.value, 10);
     const isDetalhado = getModo() === 'DETALHADO';
 
     const templateId = isDetalhado ? 'empty-item-detalhado-template' : 'empty-item-template';
-    const template = document.getElementById(templateId).innerHTML;
-    const html = template.replaceAll('__prefix__', index);
+    let html = document.getElementById(templateId).innerHTML;
+    
+    html = html.replaceAll('__prefix__', index);
+    html = html.replace(/data-select2-id="[^"]*"/g, '');
+    html = html.replace(/aria-hidden="true"/g, '');
+    html = html.replace(/tabindex="-1"/g, '');
+    html = html.replace(/class="select2-hidden-accessible"/g, 'class=""');
 
     const container = document.getElementById('itens-container');
     container.insertAdjacentHTML('beforeend', html);
 
     totalFormsInput.value = index + 1;
 
-    // Inicializa contador de unidades para o item novo
-    unidadeIndexCounters[index] = 0;
-
     const newRow = container.querySelector('.item-row:last-child');
-    initSelect2In(newRow);
+    
+    $(newRow).find('span.select2-container').remove();
+    
+    $(newRow).find('select.select2').each(function() {
+      $(this).removeClass('select2-hidden-accessible');
+      $(this).removeAttr('data-select2-id');
+      $(this).removeAttr('aria-hidden');
+      $(this).removeAttr('tabindex');
+    });
+
+    setTimeout(() => {
+      initSelect2In(newRow);
+    }, 100);
 
     recalcularTudo();
   }
@@ -665,30 +805,57 @@
     recalcularTudo();
   }
 
+  // ===== GERENCIAMENTO DE UNIDADES =====
   function adicionarUnidade(itemIdx) {
     const totalFormsId = `id_unidades-${itemIdx}-TOTAL_FORMS`;
     const totalForms = document.getElementById(totalFormsId);
-    
+
     if (!totalForms) {
       console.error('Management form não encontrado para item', itemIdx);
       return;
     }
 
     const index = parseInt(totalForms.value, 10);
-
-    // Template pode vir de item existente OU de item novo criado via JS
     const tpl = document.querySelector(`template.empty-unidade-form-template[data-item-index="${itemIdx}"]`);
-    
+
     if (!tpl) {
       console.error('Template de unidade não encontrado para item', itemIdx);
       return;
     }
 
-    const html = tpl.innerHTML.replaceAll('__prefix__', index);
-
-    document.querySelector(`.unidades-list[data-item-index="${itemIdx}"]`).insertAdjacentHTML('beforeend', html);
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = tpl.innerHTML.trim();
+    
+    const unidadeRow = tempDiv.querySelector('.unidade-row');
+    
+    if (!unidadeRow) {
+      console.error('Não foi possível encontrar .unidade-row no template');
+      return;
+    }
+    
+    unidadeRow.setAttribute('data-item-index', itemIdx);
+    unidadeRow.setAttribute('data-unidade-index', index);
+    
+    unidadeRow.querySelectorAll('input, select, textarea').forEach(input => {
+      ['name', 'id'].forEach(attr => {
+        const currentValue = input.getAttribute(attr);
+        if (currentValue) {
+          let newValue = currentValue
+            .replace(/__item_idx__/g, itemIdx)
+            .replace(/__unidade_idx__/g, index)
+            .replace(/__prefix__/g, itemIdx)
+            .replace(/__unidade_prefix__/g, index);
+          
+          input.setAttribute(attr, newValue);
+        }
+      });
+    });
+    
+    const unidadesList = document.querySelector(`.unidades-list[data-item-index="${itemIdx}"]`);
+    unidadesList.appendChild(unidadeRow);
 
     totalForms.value = index + 1;
+    
     recalcularTudo();
   }
 
@@ -705,8 +872,8 @@
     recalcularTudo();
   }
 
+  // ===== CÁLCULOS =====
   function calcularM3Unidade(unidadeRow) {
-    // Calcula m³ conforme fórmula do model
     const $row = $(unidadeRow);
     
     const comprimento = parseFloat($row.find('input[name$="-comprimento"]').val()) || 0;
@@ -716,21 +883,23 @@
 
     if (comprimento <= 0 || rodo <= 0) return;
 
-    // Fórmula: m³ = ((rodo/4)² * comp) / 1.000.000 - (desc1 * desc2 * comp) / 1.000.000
     const parteRodo = (Math.pow(rodo / 4, 2) * comprimento) / 1000000;
     const parteDesconto = (desc1 * desc2 * comprimento) / 1000000;
     const m3Liquida = parteRodo - parteDesconto;
 
     $row.find('input[name$="-quantidade_m3"]').val(m3Liquida.toFixed(3));
 
-    // Recalcula item e totais
     const itemIdx = $row.data('item-index');
-    recalcularItem(itemIdx);
-    calcularTotaisGerais();
+    if (itemIdx !== undefined) {
+      recalcularItem(itemIdx);
+      calcularTotaisGerais();
+    }
   }
 
   function recalcularItem(itemIdx) {
     const itemRow = $(`.item-row[data-item-index="${itemIdx}"]`);
+    if (!itemRow.length) return;
+
     const valorUnitario = parseFloat(itemRow.find('.valor-unitario').val()) || 0;
 
     let totalM3 = 0;
@@ -792,9 +961,7 @@
   }
 
   // ===== EVENTOS =====
-  $(document).on('click', '#add-item-btn', function () {
-    adicionarItem();
-  });
+  $(document).on('click', '#add-item-btn', adicionarItem);
 
   $(document).on('change', '#id_tipo_romaneio', function () {
     $('.tipo-madeira-select').each(function () {
@@ -802,29 +969,22 @@
     });
   });
 
-  $(document).on('change', '#id_modalidade', function () {
-    setModoDetalhadoUI();
-  });
+  $(document).on('change', '#id_modalidade', setModoDetalhadoUI);
 
   $(document).on('change', '.tipo-madeira-select', function () {
     atualizarPrecoItem(this);
   });
 
-  $(document).on('input', '.quantidade-m3-total', function () {
-    recalcularTudo();
-  });
+  $(document).on('input', '.quantidade-m3-total', recalcularTudo);
 
-  $(document).on('input', 'input[name$="-quantidade_m3"]', function () {
-    recalcularTudo();
-  });
+  $(document).on('input', 'input[name$="-quantidade_m3"]', recalcularTudo);
 
-  // NOVO: Calcula m³ automaticamente quando mudar comprimento, rodo ou descontos
-  $(document).on('input', 'input[name$="-comprimento"], input[name$="-rodo"], input[name$="-desconto_1"], input[name$="-desconto_2"]', function () {
+  $(document).on('input change', '.unidade-row input[name$="-comprimento"], .unidade-row input[name$="-rodo"], .unidade-row input[name$="-desconto_1"], .unidade-row input[name$="-desconto_2"]', function () {
     const unidadeRow = $(this).closest('.unidade-row');
     calcularM3Unidade(unidadeRow);
   });
 
-  // ===== INIT =====
+  // ===== INICIALIZAÇÃO =====
   $(document).ready(function () {
     initSelect2In(document);
 
@@ -833,6 +993,16 @@
     });
 
     setModoDetalhadoUI();
+
+    $('.unidade-row:visible').each(function() {
+      const $row = $(this);
+      const comprimento = parseFloat($row.find('input[name$="-comprimento"]').val()) || 0;
+      const rodo = parseFloat($row.find('input[name$="-rodo"]').val()) || 0;
+      
+      if (comprimento > 0 && rodo > 0) {
+        calcularM3Unidade($row);
+      }
+    });
   });
 </script>
 {% endblock %}

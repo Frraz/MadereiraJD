@@ -1,157 +1,505 @@
 {% extends 'base.html' %}
+
 {% block title %}Romaneio #{{ romaneio.numero_romaneio }}{% endblock %}
 
+{% block extra_css %}
+<style>
+  /* ===== HEADER DO CARD ===== */
+  .romaneio-header {
+    background: linear-gradient(135deg, #2c5530 0%, #5a8c5e 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 0.5rem 0.5rem 0 0;
+  }
+
+  .romaneio-numero {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  /* ===== BADGES ===== */
+  .badge-custom {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    border-radius: 50px;
+  }
+
+  /* ===== CARDS DE INFORMAÇÕES ===== */
+  .info-card {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    transition: all 0.3s;
+    height: 100%;
+  }
+
+  .info-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-color: #667eea;
+  }
+
+  .info-card-label {
+    font-size: 0.85rem;
+    color: #6c757d;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+  }
+
+  .info-card-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #212529;
+  }
+
+  .info-card-icon {
+    font-size: 2rem;
+    color: #667eea;
+    opacity: 0.3;
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  /* ===== CARDS DE TOTAIS ===== */
+  .total-card {
+    background: white;
+    border: 2px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s;
+  }
+
+  .total-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  }
+
+  .total-card-m3 {
+    border-color: #0dcaf0;
+  }
+
+  .total-card-m3:hover {
+    border-color: #0dcaf0;
+    background: #cff4fc;
+  }
+
+  .total-card-bruto {
+    border-color: #ffc107;
+  }
+
+  .total-card-bruto:hover {
+    border-color: #ffc107;
+    background: #fff3cd;
+  }
+
+  .total-card-liquido {
+    border-color: #198754;
+  }
+
+  .total-card-liquido:hover {
+    border-color: #198754;
+    background: #d1e7dd;
+  }
+
+  .total-card-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .total-card-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  /* ===== TABELA DE ITENS ===== */
+  .items-table {
+    background: white;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  .items-table thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .items-table thead th {
+    border: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    padding: 1rem;
+  }
+
+  .items-table tbody tr {
+    transition: background-color 0.2s;
+  }
+
+  .items-table tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+
+  /* ===== SEÇÃO DE UNIDADES ===== */
+  .unidades-section {
+    background: #f8f9fa;
+    border-left: 4px solid #667eea;
+    padding: 1rem;
+    margin-top: 0.5rem;
+    border-radius: 0.25rem;
+  }
+
+  .unidade-item {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s;
+  }
+
+  .unidade-item:hover {
+    border-color: #667eea;
+    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.2);
+  }
+
+  /* ===== ALERT DE DESCONTO ===== */
+  .desconto-alert {
+    background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+    border: none;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    color: #2d3436;
+    font-weight: 600;
+  }
+
+  /* ===== BOTÕES ===== */
+  .btn-action {
+    padding: 0.625rem 1.25rem;
+    font-weight: 600;
+    border-radius: 50px;
+    transition: all 0.3s;
+  }
+
+  .btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  /* ===== RESPONSIVIDADE ===== */
+  @media (max-width: 768px) {
+    .romaneio-numero {
+      font-size: 1.25rem;
+    }
+
+    .total-card-value {
+      font-size: 1.5rem;
+    }
+
+    .info-card-value {
+      font-size: 1.1rem;
+    }
+  }
+
+  /* ===== ANIMAÇÕES ===== */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="card mx-auto shadow-sm" style="max-width: 1100px;">
-    <div class="card-header bg-primary text-white d-flex align-items-center gap-2 flex-wrap">
-        <i class="fas fa-file-invoice me-1"></i>
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-xl-10">
+      
+      <!-- ===== HEADER DO ROMANEIO ===== -->
+      <div class="card shadow-lg mb-4 fade-in-up">
+        <div class="romaneio-header">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+              <h1 class="romaneio-numero">
+                <i class="fas fa-file-invoice"></i> #{{ romaneio.numero_romaneio }}
+              </h1>
 
-        <span class="fs-5">
-            Romaneio #{{ romaneio.numero_romaneio }}
-        </span>
+              <span class="badge badge-custom {% if romaneio.tipo_romaneio == 'NORMAL' %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                <i class="fas fa-truck"></i> {{ romaneio.get_tipo_romaneio_display|default:romaneio.tipo_romaneio }}
+              </span>
 
-        <span class="badge rounded-pill {% if romaneio.tipo_romaneio == 'NORMAL' %}bg-success{% else %}bg-warning text-dark{% endif %}">
-            {{ romaneio.get_tipo_romaneio_display|default:romaneio.tipo_romaneio }}
-        </span>
+              <span class="badge badge-custom {% if romaneio.modalidade == 'DETALHADO' %}bg-dark{% else %}bg-light text-dark{% endif %}">
+                <i class="fas fa-list-ul"></i> {{ romaneio.get_modalidade_display|default:romaneio.modalidade }}
+              </span>
+            </div>
 
-        <span class="badge rounded-pill {% if romaneio.modalidade == 'DETALHADO' %}bg-dark{% else %}bg-secondary{% endif %}">
-            {{ romaneio.get_modalidade_display|default:romaneio.modalidade }}
-        </span>
-
-        {% if romaneio.desconto and romaneio.desconto != 0 %}
-            <span class="ms-auto badge rounded-pill bg-info text-dark">
-                Desconto: {{ romaneio.desconto|floatformat:2 }}%
+            {% if romaneio.desconto and romaneio.desconto > 0 %}
+            <span class="badge badge-custom bg-warning text-dark">
+              <i class="fas fa-percent"></i> Desconto: {{ romaneio.desconto|floatformat:2 }}%
             </span>
-        {% else %}
-            <span class="ms-auto"></span>
-        {% endif %}
-    </div>
-
-    <div class="card-body">
-        <div class="row g-3 mb-4">
-            <div class="col-6 col-md-4">
-                <div class="text-muted small">Nº Romaneio</div>
-                <div class="fw-semibold">{{ romaneio.numero_romaneio }}</div>
-            </div>
-
-            <div class="col-6 col-md-4">
-                <div class="text-muted small">Data</div>
-                <div class="fw-semibold">{{ romaneio.data_romaneio|date:"d/m/Y" }}</div>
-            </div>
-
-            <div class="col-12 col-md-4">
-                <div class="text-muted small">Cliente</div>
-                <div class="fw-semibold">{{ romaneio.cliente.nome }}</div>
-            </div>
-
-            <div class="col-12 col-md-4">
-                <div class="text-muted small">Motorista</div>
-                <div class="fw-semibold">{{ romaneio.motorista.nome|default:"—" }}</div>
-            </div>
-
-            <div class="col-6 col-md-4">
-                <div class="text-muted small">Total m³</div>
-                <div class="fw-semibold">{{ romaneio.m3_total|floatformat:3 }}</div>
-            </div>
-
-            <div class="col-6 col-md-4">
-                <div class="text-muted small">Valor Bruto</div>
-                <div class="fw-bold">R$ {{ romaneio.valor_bruto|floatformat:2 }}</div>
-            </div>
-
-            <div class="col-12 col-md-4">
-                <div class="text-muted small">Valor Líquido</div>
-                <div class="text-success fw-bold">R$ {{ romaneio.valor_total|floatformat:2 }}</div>
-            </div>
+            {% endif %}
+          </div>
         </div>
 
-        <hr>
-
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-            <h5 class="m-0"><i class="fas fa-list me-2"></i>Itens do Romaneio</h5>
-
-            <div class="btn-group">
-                <a href="{% url 'romaneio:romaneio_list' %}" class="btn btn-outline-secondary btn-sm" title="Voltar para lista">
-                    <i class="fas fa-arrow-left"></i> Voltar
-                </a>
-                <a href="{% url 'romaneio:romaneio_update' romaneio.id %}" class="btn btn-primary btn-sm" title="Editar romaneio">
-                    <i class="fas fa-edit"></i> Editar
-                </a>
+        <div class="card-body p-4">
+          <!-- ===== INFORMAÇÕES PRINCIPAIS ===== -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-4 col-sm-6">
+              <div class="info-card position-relative">
+                <div class="info-card-label">
+                  <i class="fas fa-calendar-alt"></i> Data
+                </div>
+                <div class="info-card-value">{{ romaneio.data_romaneio|date:"d/m/Y" }}</div>
+                <i class="fas fa-calendar-alt info-card-icon"></i>
+              </div>
             </div>
-        </div>
 
-        <div class="table-responsive mb-3">
-            <table class="table table-bordered table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>Tipo de Madeira</th>
+            <div class="col-md-4 col-sm-6">
+              <div class="info-card position-relative">
+                <div class="info-card-label">
+                  <i class="fas fa-user-tie"></i> Cliente
+                </div>
+                <div class="info-card-value" style="font-size: 1rem;">{{ romaneio.cliente.nome }}</div>
+                <i class="fas fa-user-tie info-card-icon"></i>
+              </div>
+            </div>
 
-                        {% if romaneio.modalidade == "DETALHADO" %}
-                            <th class="text-end">Comp.</th>
-                            <th class="text-end">Rôdo</th>
-                        {% endif %}
+            <div class="col-md-4 col-sm-6">
+              <div class="info-card position-relative">
+                <div class="info-card-label">
+                  <i class="fas fa-user"></i> Motorista
+                </div>
+                <div class="info-card-value" style="font-size: 1rem;">{{ romaneio.motorista.nome|default:"Não informado" }}</div>
+                <i class="fas fa-user info-card-icon"></i>
+              </div>
+            </div>
+          </div>
 
-                        <th class="text-end">Qtd. (m³)</th>
-                        <th class="text-end">Valor Unit.</th>
-                        <th class="text-end">Total Item</th>
-                    </tr>
+          <!-- ===== CARDS DE TOTAIS ===== -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-4">
+              <div class="total-card total-card-m3">
+                <div class="total-card-label">
+                  <i class="fas fa-cube"></i> Total m³
+                </div>
+                <p class="total-card-value text-info">
+                  {{ romaneio.m3_total|floatformat:3 }}
+                </p>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="total-card total-card-bruto">
+                <div class="total-card-label">
+                  <i class="fas fa-dollar-sign"></i> Valor Bruto
+                </div>
+                <p class="total-card-value text-warning">
+                  R$ {{ romaneio.valor_bruto|floatformat:2 }}
+                </p>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="total-card total-card-liquido">
+                <div class="total-card-label">
+                  <i class="fas fa-check-circle"></i> Valor Líquido
+                </div>
+                <p class="total-card-value text-success">
+                  R$ {{ romaneio.valor_total|floatformat:2 }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {% if romaneio.desconto and romaneio.desconto > 0 %}
+          <div class="desconto-alert mb-4">
+            <i class="fas fa-percent me-2"></i>
+            <strong>Desconto aplicado:</strong> {{ romaneio.desconto|floatformat:2 }}% sobre o valor bruto
+            (R$ {{ romaneio.valor_bruto|floatformat:2 }} - desconto = R$ {{ romaneio.valor_total|floatformat:2 }})
+          </div>
+          {% endif %}
+
+          <!-- ===== BOTÕES DE AÇÃO ===== -->
+          <div class="d-flex justify-content-end gap-2 mb-4">
+            <a href="{% url 'romaneio:romaneio_list' %}" 
+               class="btn btn-outline-secondary btn-action">
+              <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+            <a href="{% url 'romaneio:romaneio_update' romaneio.id %}" 
+               class="btn btn-primary btn-action">
+              <i class="fas fa-edit"></i> Editar Romaneio
+            </a>
+          </div>
+
+          <!-- ===== SEÇÃO DE ITENS ===== -->
+          <div class="mb-4">
+            <h4 class="mb-3">
+              <i class="fas fa-list text-primary"></i> Itens do Romaneio
+            </h4>
+
+            <div class="table-responsive">
+              <table class="table items-table mb-0">
+                <thead>
+                  <tr>
+                    <th>Tipo de Madeira</th>
+                    <th class="text-end">Qtd. (m³)</th>
+                    <th class="text-end">Valor Unit.</th>
+                    <th class="text-end">Total Item</th>
+                    {% if romaneio.modalidade == 'DETALHADO' %}
+                    <th class="text-center">Unidades</th>
+                    {% endif %}
+                  </tr>
                 </thead>
                 <tbody>
-                    {% for item in itens %}
-                    <tr>
-                        <td class="fw-semibold">{{ item.tipo_madeira.nome }}</td>
+                  {% for item in itens %}
+                  <tr>
+                    <td>
+                      <strong>
+                        <i class="fas fa-tree text-success"></i> {{ item.tipo_madeira.nome }}
+                      </strong>
+                    </td>
+                    <td class="text-end">
+                      <span class="badge bg-info">{{ item.quantidade_m3_total|floatformat:3 }} m³</span>
+                    </td>
+                    <td class="text-end">R$ {{ item.valor_unitario|floatformat:2 }}</td>
+                    <td class="text-end">
+                      <strong class="text-success">R$ {{ item.valor_total|floatformat:2 }}</strong>
+                    </td>
+                    {% if romaneio.modalidade == 'DETALHADO' %}
+                    <td class="text-center">
+                      <span class="badge bg-dark">{{ item.unidades.count }} unidade{{ item.unidades.count|pluralize }}</span>
+                    </td>
+                    {% endif %}
+                  </tr>
 
-                        {% if romaneio.modalidade == "DETALHADO" %}
-                            <td class="text-end">{{ item.comprimento|default:"—" }}</td>
-                            <td class="text-end">{{ item.rodo|default:"—" }}</td>
-                        {% endif %}
-
-                        {# seu model mudou: agora é quantidade_m3_total #}
-                        <td class="text-end">{{ item.quantidade_m3_total|floatformat:3 }}</td>
-
-                        <td class="text-end">R$ {{ item.valor_unitario|floatformat:2 }}</td>
-                        <td class="text-end fw-bold text-success">R$ {{ item.valor_total|floatformat:2 }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="{% if romaneio.modalidade == 'DETALHADO' %}6{% else %}4{% endif %}" class="text-center text-muted">
-                            Nenhum item registrado.
-                        </td>
-                    </tr>
-                    {% endfor %}
+                  <!-- ===== UNIDADES (SE DETALHADO) ===== -->
+                  {% if romaneio.modalidade == 'DETALHADO' and item.unidades.exists %}
+                  <tr>
+                    <td colspan="5" class="p-0 border-0">
+                      <div class="unidades-section">
+                        <h6 class="mb-2">
+                          <i class="fas fa-cubes"></i> Unidades (Toras)
+                        </h6>
+                        {% for unidade in item.unidades.all %}
+                        <div class="unidade-item">
+                          <div class="d-flex gap-4 flex-wrap">
+                            <span>
+                              <i class="fas fa-arrows-alt-h text-primary"></i> 
+                              <strong>Comprimento:</strong> {{ unidade.comprimento|floatformat:2 }} m
+                            </span>
+                            <span>
+                              <i class="fas fa-circle text-warning"></i> 
+                              <strong>Rôdo:</strong> {{ unidade.rodo|floatformat:2 }} cm
+                            </span>
+                            {% if unidade.desconto_1 and unidade.desconto_1 > 0 %}
+                            <span>
+                              <i class="fas fa-minus-circle text-danger"></i> 
+                              <strong>Desc. 1:</strong> {{ unidade.desconto_1|floatformat:2 }} cm
+                            </span>
+                            {% endif %}
+                            {% if unidade.desconto_2 and unidade.desconto_2 > 0 %}
+                            <span>
+                              <i class="fas fa-minus-circle text-danger"></i> 
+                              <strong>Desc. 2:</strong> {{ unidade.desconto_2|floatformat:2 }} cm
+                            </span>
+                            {% endif %}
+                          </div>
+                          <div>
+                            <span class="badge bg-success" style="font-size: 1rem;">
+                              <i class="fas fa-cube"></i> {{ unidade.quantidade_m3|floatformat:3 }} m³
+                            </span>
+                          </div>
+                        </div>
+                        {% endfor %}
+                      </div>
+                    </td>
+                  </tr>
+                  {% endif %}
+                  {% empty %}
+                  <tr>
+                    <td colspan="{% if romaneio.modalidade == 'DETALHADO' %}5{% else %}4{% endif %}" 
+                        class="text-center py-5">
+                      <div class="text-muted">
+                        <i class="fas fa-inbox fa-3x mb-3"></i>
+                        <h5>Nenhum item registrado</h5>
+                        <p>Este romaneio ainda não possui itens.</p>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
                 </tbody>
-            </table>
-        </div>
-
-        <!-- Totais do romaneio -->
-        <div class="row mb-3 g-2">
-            <div class="col-md-4">
-                <div class="p-3 border rounded bg-light">
-                    <div class="text-muted small"><i class="fas fa-cube"></i> Total m³</div>
-                    <div class="fw-bold">{{ romaneio.m3_total|floatformat:3 }}</div>
-                </div>
+              </table>
             </div>
+          </div>
 
-            <div class="col-md-4">
-                <div class="p-3 border rounded bg-light">
-                    <div class="text-muted small"><i class="fas fa-dollar-sign"></i> Bruto</div>
-                    <div class="fw-bold">R$ {{ romaneio.valor_bruto|floatformat:2 }}</div>
-                </div>
+          <!-- ===== INFORMAÇÕES ADICIONAIS ===== -->
+          {% if romaneio.observacoes %}
+          <div class="alert alert-secondary">
+            <h6><i class="fas fa-comment-alt"></i> Observações:</h6>
+            <p class="mb-0">{{ romaneio.observacoes }}</p>
+          </div>
+          {% endif %}
+
+          <!-- ===== RODAPÉ COM METADADOS ===== -->
+          <div class="mt-4 pt-3 border-top text-muted small">
+            <div class="row">
+              <div class="col-md-6">
+                <i class="fas fa-user"></i> 
+                <strong>Cadastrado por:</strong> {{ romaneio.usuario_cadastro.get_full_name|default:romaneio.usuario_cadastro.username }}
+              </div>
+              <div class="col-md-6 text-md-end">
+                <i class="far fa-clock"></i> 
+                <strong>Data de cadastro:</strong> {{ romaneio.created_at|date:"d/m/Y H:i" }}
+              </div>
             </div>
-
-            <div class="col-md-4">
-                <div class="p-3 border rounded bg-light">
-                    <div class="text-muted small"><i class="fas fa-dollar-sign"></i> Líquido</div>
-                    <div class="fw-bold text-success">R$ {{ romaneio.valor_total|floatformat:2 }}</div>
-                </div>
-            </div>
+          </div>
         </div>
-
-        {% if romaneio.desconto and romaneio.desconto != 0 %}
-        <div class="alert alert-info py-2">
-            <strong>Desconto aplicado:</strong> {{ romaneio.desconto|floatformat:2 }}% sobre o valor bruto.
-        </div>
-        {% endif %}
+      </div>
     </div>
+  </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Animação de entrada dos cards
+  document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.info-card, .total-card');
+    cards.forEach((card, index) => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(20px)';
+      
+      setTimeout(() => {
+        card.style.transition = 'all 0.4s ease-out';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+      }, index * 100);
+    });
+  });
+</script>
 {% endblock %}
