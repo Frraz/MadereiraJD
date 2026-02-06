@@ -157,7 +157,7 @@ exports/
 # -------------------------------------------------
 # Arquivos gerados em runtime (PRODUÇÃO / DEPLOY)
 # -------------------------------------------------
-media/
+
 staticfiles/
 backups/
 rollbacks/
