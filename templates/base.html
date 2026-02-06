@@ -4,80 +4,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Romaneio de Madeiras{% endblock %}</title>
+    <meta name="description" content="Sistema de Gerenciamento de Romaneios de Madeira - Madeireira JD">
+    <meta name="author" content="Warley Ferraz Almeida">
+    <meta name="keywords" content="romaneio, madeira, gestão, sistema, madeireira">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="theme-color" content="#2d5a3d">
+    
+    <title>{% block title %}Sistema de Romaneios{% endblock %} | Madeireira JD</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌲%3C/text%3E%3C/svg%3E">
+    
     <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
+          rel="stylesheet" 
+          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" 
+          crossorigin="anonymous">
+    
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" 
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" 
+          crossorigin="anonymous" 
+          referrerpolicy="no-referrer">
+    
     <!-- Select2 -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <!-- Seu CSS global -->
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Global -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=1.0">
+    
+    <!-- CSS Extra das páginas -->
     {% block extra_css %}{% endblock %}
 </head>
-<body>
 
-    <!-- Navbar (Desktop) -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary d-none d-lg-flex" aria-label="Main navigation">
+<body>
+    <!-- ========================================
+         NAVBAR DESKTOP
+         ======================================== -->
+    <nav class="navbar navbar-expand-lg navbar-dark d-none d-lg-flex sticky-top" aria-label="Navegação principal">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'relatorios:dashboard' %}">
-                <i class="fas fa-tree"></i> Romaneio de Madeiras
+            <a class="navbar-brand" href="{% url 'relatorios:dashboard' %}" title="Ir para o Dashboard">
+                <i class="fas fa-tree"></i> Madeireira JD
             </a>
+            
             <div class="collapse navbar-collapse show" id="navbarNavDesktop">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'relatorios:dashboard' %}">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" 
+                           href="{% url 'relatorios:dashboard' %}"
+                           title="Dashboard">
                             <i class="fas fa-home"></i> Dashboard
                         </a>
                     </li>
 
                     {% if user.is_authenticated %}
+                    <!-- Dropdown Cadastros -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle" 
+                           href="#" 
+                           role="button"
+                           data-bs-toggle="dropdown" 
+                           aria-expanded="false"
+                           title="Menu de Cadastros">
                             <i class="fas fa-database"></i> Cadastros
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'cadastros:cliente_list' %}">Clientes</a></li>
-                            <li><a class="dropdown-item" href="{% url 'cadastros:tipo_madeira_list' %}">Tipos de Madeira</a></li>
-                            <li><a class="dropdown-item" href="{% url 'cadastros:motorista_list' %}">Motoristas</a></li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'cadastros:cliente_list' %}">
+                                    <i class="fas fa-users"></i> Clientes
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'cadastros:tipo_madeira_list' %}">
+                                    <i class="fas fa-tree"></i> Tipos de Madeira
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'cadastros:motorista_list' %}">
+                                    <i class="fas fa-truck"></i> Motoristas
+                                </a>
+                            </li>
                             {% if user.is_staff %}
-                            <li><a class="dropdown-item" href="{% url 'cadastros:usuario_list' %}">Operadores</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'cadastros:usuario_list' %}">
+                                    <i class="fas fa-user-cog"></i> Operadores
+                                </a>
+                            </li>
                             {% endif %}
                         </ul>
                     </li>
 
-                    <!-- ROMANEIOS (base única) -->
+                    <!-- Romaneios -->
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'romaneio:romaneio_list' %}">
+                        <a class="nav-link {% if 'romaneio' in request.path %}active{% endif %}" 
+                           href="{% url 'romaneio:romaneio_list' %}"
+                           title="Gerenciar Romaneios">
                             <i class="fas fa-file-invoice"></i> Romaneios
                         </a>
                     </li>
 
+                    <!-- Pagamentos -->
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'financeiro:pagamento_list' %}">
+                        <a class="nav-link {% if 'pagamento' in request.path %}active{% endif %}" 
+                           href="{% url 'financeiro:pagamento_list' %}"
+                           title="Gerenciar Pagamentos">
                             <i class="fas fa-money-bill-wave"></i> Pagamentos
                         </a>
                     </li>
 
+                    <!-- Dropdown Relatórios -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle" 
+                           href="#" 
+                           role="button"
+                           data-bs-toggle="dropdown" 
+                           aria-expanded="false"
+                           title="Menu de Relatórios">
                             <i class="fas fa-chart-bar"></i> Relatórios
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'relatorios:ficha_romaneios' %}">Ficha de Romaneios</a></li>
-                            <li><a class="dropdown-item" href="{% url 'relatorios:ficha_madeiras' %}">Por Tipo de Madeira</a></li>
-                            <li><a class="dropdown-item" href="{% url 'relatorios:fluxo_financeiro' %}">Fluxo Financeiro</a></li>
-                            <li><a class="dropdown-item" href="{% url 'relatorios:saldo_clientes' %}">Saldo de Clientes</a></li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'relatorios:ficha_romaneios' %}">
+                                    <i class="fas fa-file-alt"></i> Ficha de Romaneios
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'relatorios:ficha_madeiras' %}">
+                                    <i class="fas fa-tree"></i> Por Tipo de Madeira
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'relatorios:fluxo_financeiro' %}">
+                                    <i class="fas fa-exchange-alt"></i> Fluxo Financeiro
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'relatorios:saldo_clientes' %}">
+                                    <i class="fas fa-wallet"></i> Saldo de Clientes
+                                </a>
+                            </li>
                         </ul>
                     </li>
                     {% endif %}
                 </ul>
 
+                <!-- Menu Usuário -->
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                            <i class="fas fa-user"></i> {{ user.username }}
+                        <a class="nav-link dropdown-toggle" 
+                           href="#" 
+                           role="button"
+                           data-bs-toggle="dropdown" 
+                           aria-expanded="false"
+                           title="Menu do usuário">
+                            <i class="fas fa-user-circle"></i> {{ user.get_full_name|default:user.username }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li>
@@ -89,7 +177,7 @@
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">
+                        <a class="nav-link" href="{% url 'login' %}" title="Entrar no sistema">
                             <i class="fas fa-sign-in-alt"></i> Entrar
                         </a>
                     </li>
@@ -99,40 +187,66 @@
         </div>
     </nav>
 
-    <!-- Navbar & Offcanvas lateral (Mobile/Tablet) -->
-    <nav class="navbar navbar-dark bg-primary d-lg-none">
+    <!-- ========================================
+         NAVBAR MOBILE
+         ======================================== -->
+    <nav class="navbar navbar-dark d-lg-none sticky-top" aria-label="Navegação mobile">
         <div class="container-fluid">
-            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu" aria-controls="mobileMenu" aria-label="Abrir menu">
-                <i class="fas fa-bars fa-lg"></i>
+            <button class="btn btn-outline-light btn-sm" 
+                    type="button" 
+                    data-bs-toggle="offcanvas" 
+                    data-bs-target="#mobileMenu"
+                    aria-controls="mobileMenu"
+                    aria-label="Abrir menu">
+                <i class="fas fa-bars"></i>
             </button>
-            <a class="navbar-brand ms-2" href="{% url 'relatorios:dashboard' %}">
-                <i class="fas fa-tree"></i>
+            
+            <a class="navbar-brand mx-auto" href="{% url 'relatorios:dashboard' %}" title="Dashboard">
+                <i class="fas fa-tree"></i> Madeireira JD
             </a>
-            <span class="d-inline-block text-white fst-italic">Romaneio de Madeiras</span>
-            <div class="ms-auto">
-                {% if user.is_authenticated %}
-                <span class="me-2"><i class="fas fa-user"></i> {{ user.username }}</span>
-                <a href="{% url 'logout' %}?next={{ request.path }}" class="btn btn-outline-light btn-sm ms-2" title="Sair">
-                    <i class="fas fa-sign-out-alt"></i>
-                </a>
-                {% else %}
-                <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm ms-2" title="Entrar">
-                    <i class="fas fa-sign-in-alt"></i>
-                </a>
-                {% endif %}
+
+            {% if user.is_authenticated %}
+            <div class="dropdown">
+                <button class="btn btn-outline-light btn-sm" 
+                        type="button" 
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        aria-label="Menu do usuário">
+                    <i class="fas fa-user"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><span class="dropdown-item-text"><i class="fas fa-user me-2"></i>{{ user.username }}</span></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <a class="dropdown-item" href="{% url 'logout' %}?next={{ request.path }}">
+                            <i class="fas fa-sign-out-alt"></i> Sair
+                        </a>
+                    </li>
+                </ul>
             </div>
+            {% else %}
+            <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm" title="Entrar">
+                <i class="fas fa-sign-in-alt"></i>
+            </a>
+            {% endif %}
         </div>
     </nav>
 
+    <!-- ========================================
+         OFFCANVAS MOBILE
+         ======================================== -->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
-        <div class="offcanvas-header border-bottom pb-2">
-            <h5 class="offcanvas-title fw-bold" id="mobileMenuLabel">
-                <i class="fas fa-tree me-1"></i> Menu
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="mobileMenuLabel">
+                <i class="fas fa-bars me-2"></i> Menu Principal
             </h5>
-            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+            <button type="button" 
+                    class="btn-close btn-close-white" 
+                    data-bs-dismiss="offcanvas" 
+                    aria-label="Fechar menu"></button>
         </div>
-        <div class="offcanvas-body p-0">
-            <ul class="navbar-nav flex-column gap-2 p-2">
+        <div class="offcanvas-body">
+            <ul class="navbar-nav flex-column gap-1">
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'relatorios:dashboard' %}">
                         <i class="fas fa-home"></i> Dashboard
@@ -140,48 +254,73 @@
                 </li>
 
                 {% if user.is_authenticated %}
+                <!-- Cadastros Mobile -->
                 <li class="nav-item">
-                    <a class="nav-link d-flex align-items-center" data-bs-toggle="collapse" href="#cadastrosMobileMenu" role="button" aria-expanded="false" aria-controls="cadastrosMobileMenu">
-                        <i class="fas fa-database me-2"></i> Cadastros
-                        <i class="fas fa-chevron-down ms-auto small text-muted"></i>
+                    <a class="nav-link" 
+                       data-bs-toggle="collapse" 
+                       href="#cadastrosMobile"
+                       role="button"
+                       aria-expanded="false"
+                       aria-controls="cadastrosMobile">
+                        <i class="fas fa-database"></i> Cadastros
+                        <i class="fas fa-chevron-down ms-auto"></i>
                     </a>
-                    <div class="collapse ps-3" id="cadastrosMobileMenu">
-                        <ul class="navbar-nav flex-column mb-2">
-                            <li><a class="nav-link" href="{% url 'cadastros:cliente_list' %}">Clientes</a></li>
-                            <li><a class="nav-link" href="{% url 'cadastros:tipo_madeira_list' %}">Tipos de Madeira</a></li>
-                            <li><a class="nav-link" href="{% url 'cadastros:motorista_list' %}">Motoristas</a></li>
-                            {% if user.is_staff %}
-                            <li><a class="nav-link" href="{% url 'cadastros:usuario_list' %}">Operadores</a></li>
-                            {% endif %}
-                        </ul>
+                    <div class="collapse ps-3" id="cadastrosMobile">
+                        <a class="nav-link" href="{% url 'cadastros:cliente_list' %}">
+                            <i class="fas fa-users"></i> Clientes
+                        </a>
+                        <a class="nav-link" href="{% url 'cadastros:tipo_madeira_list' %}">
+                            <i class="fas fa-tree"></i> Tipos de Madeira
+                        </a>
+                        <a class="nav-link" href="{% url 'cadastros:motorista_list' %}">
+                            <i class="fas fa-truck"></i> Motoristas
+                        </a>
+                        {% if user.is_staff %}
+                        <a class="nav-link" href="{% url 'cadastros:usuario_list' %}">
+                            <i class="fas fa-user-cog"></i> Operadores
+                        </a>
+                        {% endif %}
                     </div>
                 </li>
 
-                <!-- ROMANEIOS (base única) -->
+                <!-- Romaneios Mobile -->
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'romaneio:romaneio_list' %}">
                         <i class="fas fa-file-invoice"></i> Romaneios
                     </a>
                 </li>
 
+                <!-- Pagamentos Mobile -->
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'financeiro:pagamento_list' %}">
                         <i class="fas fa-money-bill-wave"></i> Pagamentos
                     </a>
                 </li>
 
+                <!-- Relatórios Mobile -->
                 <li class="nav-item">
-                    <a class="nav-link d-flex align-items-center" data-bs-toggle="collapse" href="#relatoriosMobileMenu" role="button" aria-expanded="false" aria-controls="relatoriosMobileMenu">
-                        <i class="fas fa-chart-bar me-2"></i> Relatórios
-                        <i class="fas fa-chevron-down ms-auto small text-muted"></i>
+                    <a class="nav-link" 
+                       data-bs-toggle="collapse" 
+                       href="#relatoriosMobile"
+                       role="button"
+                       aria-expanded="false"
+                       aria-controls="relatoriosMobile">
+                        <i class="fas fa-chart-bar"></i> Relatórios
+                        <i class="fas fa-chevron-down ms-auto"></i>
                     </a>
-                    <div class="collapse ps-3" id="relatoriosMobileMenu">
-                        <ul class="navbar-nav flex-column mb-2">
-                            <li><a class="nav-link" href="{% url 'relatorios:ficha_romaneios' %}">Ficha de Romaneios</a></li>
-                            <li><a class="nav-link" href="{% url 'relatorios:ficha_madeiras' %}">Por Tipo de Madeira</a></li>
-                            <li><a class="nav-link" href="{% url 'relatorios:fluxo_financeiro' %}">Fluxo Financeiro</a></li>
-                            <li><a class="nav-link" href="{% url 'relatorios:saldo_clientes' %}">Saldo de Clientes</a></li>
-                        </ul>
+                    <div class="collapse ps-3" id="relatoriosMobile">
+                        <a class="nav-link" href="{% url 'relatorios:ficha_romaneios' %}">
+                            <i class="fas fa-file-alt"></i> Ficha de Romaneios
+                        </a>
+                        <a class="nav-link" href="{% url 'relatorios:ficha_madeiras' %}">
+                            <i class="fas fa-tree"></i> Por Tipo de Madeira
+                        </a>
+                        <a class="nav-link" href="{% url 'relatorios:fluxo_financeiro' %}">
+                            <i class="fas fa-exchange-alt"></i> Fluxo Financeiro
+                        </a>
+                        <a class="nav-link" href="{% url 'relatorios:saldo_clientes' %}">
+                            <i class="fas fa-wallet"></i> Saldo de Clientes
+                        </a>
                     </div>
                 </li>
                 {% endif %}
@@ -189,108 +328,235 @@
         </div>
     </div>
 
-    <!-- Sistema de mensagens Django -->
+    <!-- ========================================
+         MENSAGENS DO SISTEMA
+         ======================================== -->
     {% if messages %}
-    <div class="container mt-3">
+    <div class="container mt-4">
         {% for message in messages %}
         <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            <strong>
+                {% if message.tags == 'success' %}
+                    <i class="fas fa-check-circle me-2"></i>
+                {% elif message.tags == 'error' or message.tags == 'danger' %}
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                {% elif message.tags == 'warning' %}
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                {% elif message.tags == 'info' %}
+                    <i class="fas fa-info-circle me-2"></i>
+                {% endif %}
+            </strong>
             {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar mensagem"></button>
         </div>
         {% endfor %}
     </div>
     {% endif %}
 
-    <main class="content-wrapper" tabindex="-1">
-        <div class="container-fluid py-4">
-            {% block content %}{% endblock %}
+    <!-- ========================================
+         CONTEÚDO PRINCIPAL
+         ======================================== -->
+    <main class="content-wrapper" role="main">
+        <div class="container-fluid">
+            {% block content %}
+            <!-- O conteúdo das páginas será inserido aqui -->
+            {% endblock %}
         </div>
     </main>
 
-    <!-- Rodapé, modal desenvolvedor e scripts -->
-    <footer class="bg-light text-center py-3 mt-5 border-top">
-        <div class="container">
-            <p class="mb-0 text-muted">
-                &copy; {% now "Y" %} Sistema de Romaneio de Madeiras |
-                Desenvolvido com Django
+    <!-- ========================================
+         FOOTER
+         ======================================== -->
+    <footer class="mt-auto" role="contentinfo">
+        <div class="container text-center">
+            <p class="text-muted mb-0 small">
+                &copy; {% now "Y" %} Romaneios | 
+                Desenvolvido com 
                 <img src="https://img.icons8.com/?size=100&id=LPmcJ9e0FU7K&format=png&color=000000"
-                    alt="Django"
-                    class="ms-1"
-                    style="width: 16px; height: 16px;">
-                |
-                <a href="#" id="devInfoLink" class="text-decoration-none">
-                    Contato do desenvolvedor
+                     alt="Django Framework" 
+                     width="16" 
+                     height="16"
+                     style="vertical-align: middle;" 
+                     loading="lazy"> Django | 
+                <a href="#" id="devInfoLink" class="text-decoration-none" title="Ver contatos do desenvolvedor">
+                    <i class="fas fa-code"></i> Contato do Desenvolvedor
                 </a>
-                <i class="fas fa-code ms-1"></i>
             </p>
         </div>
     </footer>
 
-    <dialog id="devInfoDialog" class="p-4 border rounded shadow" aria-modal="true">
-        <h5>Contato do desenvolvedor</h5>
-        <p class="text-muted">
-            Precisa de suporte, melhorias ou novas funcionalidades?
+    <!-- ========================================
+         MODAL INFORMAÇÕES DO DESENVOLVEDOR
+         ======================================== -->
+    <dialog id="devInfoDialog" aria-labelledby="devInfoTitle" aria-modal="true">
+        <h5 id="devInfoTitle" class="mb-3">
+            Warley Ferraz Almeida
+        </h5>
+        <p class="text-muted mb-4">
+            <i class="fas fa-code me-1"></i>Desenvolvedor Full Stack
         </p>
-        <div class="d-flex flex-column gap-2">
-            <a class="btn btn-outline-primary btn-sm" href="https://portfolio.ferzion.com.br/" target="_blank" rel="noopener noreferrer"><i class="fas fa-globe"></i> Portfólio</a>
-            <a class="btn btn-outline-info btn-sm" href="https://www.linkedin.com/in/warley-ferraz-almeida-280a55185/" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i> LinkedIn</a>
-            <a class="btn btn-outline-dark btn-sm" href="https://github.com/Frraz" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i> GitHub</a>
-            <a class="btn btn-outline-danger btn-sm" href="https://www.instagram.com/ferraz.____/profilecard/?igsh=MW9keGQzNHFrMXBvOQ==" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i> Instagram</a>
-            <a class="btn btn-outline-success btn-sm" href="https://wa.me/5594992083253" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> WhatsApp</a>
-            <a class="btn btn-outline-secondary btn-sm" href="tel:+559492083253"><i class="fas fa-phone"></i> Telefone: +55 (94) 9 9208-3253</a>
-            <a class="btn btn-outline-primary btn-sm" href="mailto:warley.ferraz.wf@gmail.com"><i class="fas fa-envelope"></i> E-mail</a>
+        <div class="d-grid gap-2">
+            <a class="btn btn-outline-primary" 
+               href="https://warley.dev.ferzion.com.br/" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               title="Visitar portfólio">
+                <i class="fas fa-globe me-2"></i>Portfólio
+            </a>
+            <a class="btn btn-outline-info" 
+               href="https://www.linkedin.com/in/warley-ferraz-almeida-280a55185/" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               title="Visitar LinkedIn">
+                <i class="fab fa-linkedin me-2"></i>LinkedIn
+            </a>
+            <a class="btn btn-outline-dark" 
+               href="https://github.com/Frraz" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               title="Visitar GitHub">
+                <i class="fab fa-github me-2"></i>GitHub
+            </a>
+            <a class="btn btn-outline-danger" 
+               href="https://www.instagram.com/ferraz.____/profilecard/" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               title="Visitar Instagram">
+                <i class="fab fa-instagram me-2"></i>Instagram
+            </a>
+            <a class="btn btn-outline-success" 
+               href="https://wa.me/5594992083253" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               title="Enviar mensagem no WhatsApp">
+                <i class="fab fa-whatsapp me-2"></i>WhatsApp
+            </a>
+            <a class="btn btn-outline-secondary" 
+               href="tel:+5594992083253"
+               title="Ligar para +55 (94) 9 9208-3253">
+                <i class="fas fa-phone me-2"></i>+55 (94) 9 9208-3253
+            </a>
+            <a class="btn btn-outline-primary" 
+               href="mailto:warley.ferraz.wf@gmail.com"
+               title="Enviar e-mail">
+                <i class="fas fa-envelope me-2"></i>E-mail
+            </a>
         </div>
-        <div class="mt-3 text-end">
-            <button id="devInfoClose" class="btn btn-secondary btn-sm">Fechar</button>
+        <div class="mt-4 text-end">
+            <button id="devInfoClose" class="btn btn-secondary" type="button">
+                <i class="fas fa-times me-1"></i>Fechar
+            </button>
         </div>
     </dialog>
-    <div id="devInfoDialogFallback" class="d-none"></div>
 
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- ========================================
+         SCRIPTS
+         ======================================== -->
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" 
+            integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" 
+            crossorigin="anonymous"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" 
+            integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" 
+            crossorigin="anonymous"></script>
+    
+    <!-- Select2 -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    <!-- Scripts Customizados -->
     <script>
-        // Inicializar Select2
+        'use strict';
+
+        // ===== INICIALIZAR SELECT2 =====
         $(function() {
-            $('.select2').select2({ theme: 'bootstrap-5', width: '100%' });
+            $('.select2').select2({ 
+                theme: 'bootstrap-5', 
+                width: '100%',
+                placeholder: 'Selecione...',
+                allowClear: true,
+                language: {
+                    noResults: function() {
+                        return "Nenhum resultado encontrado";
+                    },
+                    searching: function() {
+                        return "Buscando...";
+                    }
+                }
+            });
         });
 
-        // Modal dev info responsivo
-        (function(){
+        // ===== MODAL DESENVOLVEDOR =====
+        (function() {
             const link = document.getElementById('devInfoLink');
             const dialog = document.getElementById('devInfoDialog');
             const closeBtn = document.getElementById('devInfoClose');
-            if (!link || !dialog) return;
 
-            function openDialog() {
+            if (!link || !dialog || !closeBtn) return;
+
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
                 if (typeof dialog.showModal === 'function') {
                     dialog.showModal();
                 } else {
                     dialog.setAttribute('open', '');
-                    document.getElementById('devInfoDialogFallback').classList.remove('d-none');
                 }
-            }
+            });
 
-            function closeDialog() {
-                if (dialog.open) { dialog.close(); }
-                document.getElementById('devInfoDialogFallback').classList.add('d-none');
-            }
+            closeBtn.addEventListener('click', function() {
+                dialog.close();
+            });
 
-            link.addEventListener('click', function(ev){ ev.preventDefault(); openDialog(); });
-            closeBtn.addEventListener('click', function(){ closeDialog(); });
-
-            dialog.addEventListener('click', function(event) {
+            dialog.addEventListener('click', function(e) {
                 const rect = dialog.getBoundingClientRect();
-                const isInDialog = (
-                    event.clientX >= rect.left &&
-                    event.clientX <= rect.right &&
-                    event.clientY >= rect.top &&
-                    event.clientY <= rect.bottom
+                const isOutside = (
+                    e.clientX < rect.left ||
+                    e.clientX > rect.right ||
+                    e.clientY < rect.top ||
+                    e.clientY > rect.bottom
                 );
-                if (!isInDialog) { closeDialog(); }
+                if (isOutside) {
+                    dialog.close();
+                }
+            });
+
+            dialog.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    dialog.close();
+                }
+            });
+        })();
+
+        // ===== AUTO-FECHAR ALERTS (5 SEGUNDOS) =====
+        (function() {
+            setTimeout(function() {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function(alert) {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                });
+            }, 5000);
+        })();
+
+        // ===== FECHAR OFFCANVAS AO CLICAR EM LINK =====
+        (function() {
+            const offcanvas = document.getElementById('mobileMenu');
+            if (!offcanvas) return;
+
+            const links = offcanvas.querySelectorAll('a:not([data-bs-toggle])');
+            links.forEach(function(link) {
+                link.addEventListener('click', function() {
+                    const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvas);
+                    if (bsOffcanvas) {
+                        bsOffcanvas.hide();
+                    }
+                });
             });
         })();
     </script>
+
+    <!-- Scripts Extras das Páginas -->
     {% block extra_js %}{% endblock %}
 </body>
 </html>
