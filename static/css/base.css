@@ -263,6 +263,26 @@ a:hover {
     opacity: 0.5;
 }
 
+/* ===== DROPDOWN ITEM ACTIVE (sobrescreve Bootstrap azul) ===== */
+.dropdown-menu .dropdown-item.active,
+.dropdown-menu .dropdown-item:active {
+    background: var(--primary-color) !important;
+    color: var(--light-text) !important;
+}
+
+/* Ícones dentro do item ativo */
+.dropdown-menu .dropdown-item.active i,
+.dropdown-menu .dropdown-item:active i {
+    color: var(--light-text) !important;
+    opacity: 1;
+}
+
+/* Hover em cima do item ativo (opcional) */
+.dropdown-menu .dropdown-item.active:hover {
+    background: var(--primary-dark) !important;
+    color: var(--light-text) !important;
+}
+
 /* ===== OFFCANVAS MOBILE ===== */
 .offcanvas {
     border-radius: 0;

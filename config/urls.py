@@ -57,11 +57,11 @@ urlpatterns = [
     ),
 
     # Rotas principais
-    path("", include("apps.relatorios.urls")),
-    path("cadastros/", include("apps.cadastros.urls")),
-    path("romaneio/", include("apps.romaneio.urls")),
-    path("financeiro/", include("apps.financeiro.urls")),
-    path("core/", include("apps.core.urls")),
+    path("", include(("apps.relatorios.urls", "relatorios"), namespace="relatorios")),
+    path("cadastros/", include(("apps.cadastros.urls", "cadastros"), namespace="cadastros")),
+    path("romaneio/", include(("apps.romaneio.urls", "romaneio"), namespace="romaneio")),
+    path("financeiro/", include(("apps.financeiro.urls", "financeiro"), namespace="financeiro")),
+    path("core/", include(("apps.core.urls", "core"), namespace="core")),
 ]
 
 if settings.DEBUG:

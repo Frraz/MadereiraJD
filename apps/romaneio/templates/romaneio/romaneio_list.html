@@ -29,14 +29,14 @@
 
   /* Links na tabela */
   .romaneio-link {
-    color: #0d6efd;
+    color: #198754;
     font-weight: 600;
     text-decoration: none;
     transition: color 0.2s;
   }
 
   .romaneio-link:hover {
-    color: #0a58ca;
+    color: #00cf6e;
     text-decoration: underline;
   }
 
@@ -74,7 +74,7 @@
     <div class="col-12">
       <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
         <h1 class="h3 mb-0">
-          <i class="fas fa-file-invoice text-primary"></i> Romaneios
+          <i class="fas fa-file-invoice text-success"></i> Romaneios
         </h1>
         <a href="{% url 'romaneio:romaneio_create' %}" class="btn btn-success">
           <i class="fas fa-plus"></i> Novo Romaneio
@@ -84,13 +84,15 @@
   </div>
 
   <div class="card shadow-sm">
-    <div class="card-header bg-white">
+    <div class="card-header bg-dark text-white">
       <h5 class="mb-0">
         <i class="fas fa-filter"></i> Filtros e Pesquisa
       </h5>
     </div>
 
     <div class="card-body">
+
+  
       <!-- Formulário de Filtros -->
       <form method="get" class="row g-3 mb-4">
         <div class="col-md-2 col-sm-6">

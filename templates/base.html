@@ -9,41 +9,47 @@
     <meta name="keywords" content="romaneio, madeira, gestão, sistema, madeireira">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="theme-color" content="#2d5a3d">
-    
+
     <title>{% block title %}Sistema de Romaneios{% endblock %} | Madeireira JD</title>
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌲%3C/text%3E%3C/svg%3E">
-    
+
     <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
-          rel="stylesheet" 
-          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
           crossorigin="anonymous">
-    
+
     <!-- Font Awesome -->
-    <link rel="stylesheet" 
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
-          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" 
-          crossorigin="anonymous" 
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+          crossorigin="anonymous"
           referrerpolicy="no-referrer">
-    
+
     <!-- Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
-    
+
     <!-- Google Fonts - Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- CSS Global -->
     <link rel="stylesheet" href="{% static 'css/base.css' %}?v=1.0">
-    
+
     <!-- CSS Extra das páginas -->
     {% block extra_css %}{% endblock %}
 </head>
 
 <body>
+    <!-- =========================================================
+       Helpers para menu ativo:
+       - Requer que você tenha colocado namespace nos includes do config/urls.py
+       - Ex.: include(("apps.cadastros.urls","cadastros"), namespace="cadastros")
+       ========================================================= -->
+    {% with ns=request.resolver_match.namespace urlname=request.resolver_match.url_name %}
     <!-- ========================================
          NAVBAR DESKTOP
          ======================================== -->
@@ -52,11 +58,11 @@
             <a class="navbar-brand" href="{% url 'relatorios:dashboard' %}" title="Ir para o Dashboard">
                 <i class="fas fa-tree"></i> Madeireira JD
             </a>
-            
+
             <div class="collapse navbar-collapse show" id="navbarNavDesktop">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" 
+                        <a class="nav-link {% if ns == 'relatorios' and urlname == 'dashboard' %}active{% endif %}"
                            href="{% url 'relatorios:dashboard' %}"
                            title="Dashboard">
                             <i class="fas fa-home"></i> Dashboard
@@ -66,34 +72,38 @@
                     {% if user.is_authenticated %}
                     <!-- Dropdown Cadastros -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" 
-                           href="#" 
+                        <a class="nav-link dropdown-toggle {% if ns == 'cadastros' %}active{% endif %}"
+                           href="#"
                            role="button"
-                           data-bs-toggle="dropdown" 
+                           data-bs-toggle="dropdown"
                            aria-expanded="false"
                            title="Menu de Cadastros">
                             <i class="fas fa-database"></i> Cadastros
                         </a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item" href="{% url 'cadastros:cliente_list' %}">
+                                <a class="dropdown-item {% if ns == 'cadastros' and urlname|slice:':7' == 'cliente' %}active{% endif %}"
+                                   href="{% url 'cadastros:cliente_list' %}">
                                     <i class="fas fa-users"></i> Clientes
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="{% url 'cadastros:tipo_madeira_list' %}">
+                                <a class="dropdown-item {% if ns == 'cadastros' and urlname|slice:':11' == 'tipo_madeira' %}active{% endif %}"
+                                   href="{% url 'cadastros:tipo_madeira_list' %}">
                                     <i class="fas fa-tree"></i> Tipos de Madeira
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="{% url 'cadastros:motorista_list' %}">
+                                <a class="dropdown-item {% if ns == 'cadastros' and urlname|slice:':9' == 'motorista' %}active{% endif %}"
+                                   href="{% url 'cadastros:motorista_list' %}">
                                     <i class="fas fa-truck"></i> Motoristas
                                 </a>
                             </li>
                             {% if user.is_staff %}
                             <li><hr class="dropdown-divider"></li>
                             <li>
-                                <a class="dropdown-item" href="{% url 'cadastros:usuario_list' %}">
+                                <a class="dropdown-item {% if ns == 'cadastros' and urlname|slice:':7' == 'usuario' %}active{% endif %}"
+                                   href="{% url 'cadastros:usuario_list' %}">
                                     <i class="fas fa-user-cog"></i> Operadores
                                 </a>
                             </li>
@@ -103,7 +113,7 @@
 
                     <!-- Romaneios -->
                     <li class="nav-item">
-                        <a class="nav-link {% if 'romaneio' in request.path %}active{% endif %}" 
+                        <a class="nav-link {% if ns == 'romaneio' %}active{% endif %}"
                            href="{% url 'romaneio:romaneio_list' %}"
                            title="Gerenciar Romaneios">
                             <i class="fas fa-file-invoice"></i> Romaneios
@@ -112,7 +122,7 @@
 
                     <!-- Pagamentos -->
                     <li class="nav-item">
-                        <a class="nav-link {% if 'pagamento' in request.path %}active{% endif %}" 
+                        <a class="nav-link {% if ns == 'financeiro' %}active{% endif %}"
                            href="{% url 'financeiro:pagamento_list' %}"
                            title="Gerenciar Pagamentos">
                             <i class="fas fa-money-bill-wave"></i> Pagamentos
@@ -121,32 +131,36 @@
 
                     <!-- Dropdown Relatórios -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" 
-                           href="#" 
+                        <a class="nav-link dropdown-toggle {% if ns == 'relatorios' and urlname != 'dashboard' %}active{% endif %}"
+                           href="#"
                            role="button"
-                           data-bs-toggle="dropdown" 
+                           data-bs-toggle="dropdown"
                            aria-expanded="false"
                            title="Menu de Relatórios">
                             <i class="fas fa-chart-bar"></i> Relatórios
                         </a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item" href="{% url 'relatorios:ficha_romaneios' %}">
+                                <a class="dropdown-item {% if ns == 'relatorios' and urlname == 'ficha_romaneios' %}active{% endif %}"
+                                   href="{% url 'relatorios:ficha_romaneios' %}">
                                     <i class="fas fa-file-alt"></i> Ficha de Romaneios
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="{% url 'relatorios:ficha_madeiras' %}">
+                                <a class="dropdown-item {% if ns == 'relatorios' and urlname == 'ficha_madeiras' %}active{% endif %}"
+                                   href="{% url 'relatorios:ficha_madeiras' %}">
                                     <i class="fas fa-tree"></i> Por Tipo de Madeira
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="{% url 'relatorios:fluxo_financeiro' %}">
+                                <a class="dropdown-item {% if ns == 'relatorios' and urlname == 'fluxo_financeiro' %}active{% endif %}"
+                                   href="{% url 'relatorios:fluxo_financeiro' %}">
                                     <i class="fas fa-exchange-alt"></i> Fluxo Financeiro
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="{% url 'relatorios:saldo_clientes' %}">
+                                <a class="dropdown-item {% if ns == 'relatorios' and urlname == 'saldo_clientes' %}active{% endif %}"
+                                   href="{% url 'relatorios:saldo_clientes' %}">
                                     <i class="fas fa-wallet"></i> Saldo de Clientes
                                 </a>
                             </li>
@@ -159,10 +173,10 @@
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" 
-                           href="#" 
+                        <a class="nav-link dropdown-toggle"
+                           href="#"
                            role="button"
-                           data-bs-toggle="dropdown" 
+                           data-bs-toggle="dropdown"
                            aria-expanded="false"
                            title="Menu do usuário">
                             <i class="fas fa-user-circle"></i> {{ user.get_full_name|default:user.username }}
@@ -192,23 +206,23 @@
          ======================================== -->
     <nav class="navbar navbar-dark d-lg-none sticky-top" aria-label="Navegação mobile">
         <div class="container-fluid">
-            <button class="btn btn-outline-light btn-sm" 
-                    type="button" 
-                    data-bs-toggle="offcanvas" 
+            <button class="btn btn-outline-light btn-sm"
+                    type="button"
+                    data-bs-toggle="offcanvas"
                     data-bs-target="#mobileMenu"
                     aria-controls="mobileMenu"
                     aria-label="Abrir menu">
                 <i class="fas fa-bars"></i>
             </button>
-            
+
             <a class="navbar-brand mx-auto" href="{% url 'relatorios:dashboard' %}" title="Dashboard">
                 <i class="fas fa-tree"></i> Madeireira JD
             </a>
 
             {% if user.is_authenticated %}
             <div class="dropdown">
-                <button class="btn btn-outline-light btn-sm" 
-                        type="button" 
+                <button class="btn btn-outline-light btn-sm"
+                        type="button"
                         data-bs-toggle="dropdown"
                         aria-expanded="false"
                         aria-label="Menu do usuário">
@@ -240,15 +254,16 @@
             <h5 class="offcanvas-title" id="mobileMenuLabel">
                 <i class="fas fa-bars me-2"></i> Menu Principal
             </h5>
-            <button type="button" 
-                    class="btn-close btn-close-white" 
-                    data-bs-dismiss="offcanvas" 
+            <button type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="offcanvas"
                     aria-label="Fechar menu"></button>
         </div>
         <div class="offcanvas-body">
             <ul class="navbar-nav flex-column gap-1">
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'relatorios:dashboard' %}">
+                    <a class="nav-link {% if ns == 'relatorios' and urlname == 'dashboard' %}active{% endif %}"
+                       href="{% url 'relatorios:dashboard' %}">
                         <i class="fas fa-home"></i> Dashboard
                     </a>
                 </li>
@@ -256,27 +271,31 @@
                 {% if user.is_authenticated %}
                 <!-- Cadastros Mobile -->
                 <li class="nav-item">
-                    <a class="nav-link" 
-                       data-bs-toggle="collapse" 
+                    <a class="nav-link {% if ns == 'cadastros' %}active{% endif %}"
+                       data-bs-toggle="collapse"
                        href="#cadastrosMobile"
                        role="button"
-                       aria-expanded="false"
+                       aria-expanded="{% if ns == 'cadastros' %}true{% else %}false{% endif %}"
                        aria-controls="cadastrosMobile">
                         <i class="fas fa-database"></i> Cadastros
                         <i class="fas fa-chevron-down ms-auto"></i>
                     </a>
-                    <div class="collapse ps-3" id="cadastrosMobile">
-                        <a class="nav-link" href="{% url 'cadastros:cliente_list' %}">
+                    <div class="collapse ps-3 {% if ns == 'cadastros' %}show{% endif %}" id="cadastrosMobile">
+                        <a class="nav-link {% if ns == 'cadastros' and urlname|slice:':7' == 'cliente' %}active{% endif %}"
+                           href="{% url 'cadastros:cliente_list' %}">
                             <i class="fas fa-users"></i> Clientes
                         </a>
-                        <a class="nav-link" href="{% url 'cadastros:tipo_madeira_list' %}">
+                        <a class="nav-link {% if ns == 'cadastros' and urlname|slice:':11' == 'tipo_madeira' %}active{% endif %}"
+                           href="{% url 'cadastros:tipo_madeira_list' %}">
                             <i class="fas fa-tree"></i> Tipos de Madeira
                         </a>
-                        <a class="nav-link" href="{% url 'cadastros:motorista_list' %}">
+                        <a class="nav-link {% if ns == 'cadastros' and urlname|slice:':9' == 'motorista' %}active{% endif %}"
+                           href="{% url 'cadastros:motorista_list' %}">
                             <i class="fas fa-truck"></i> Motoristas
                         </a>
                         {% if user.is_staff %}
-                        <a class="nav-link" href="{% url 'cadastros:usuario_list' %}">
+                        <a class="nav-link {% if ns == 'cadastros' and urlname|slice:':7' == 'usuario' %}active{% endif %}"
+                           href="{% url 'cadastros:usuario_list' %}">
                             <i class="fas fa-user-cog"></i> Operadores
                         </a>
                         {% endif %}
@@ -285,40 +304,46 @@
 
                 <!-- Romaneios Mobile -->
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'romaneio:romaneio_list' %}">
+                    <a class="nav-link {% if ns == 'romaneio' %}active{% endif %}"
+                       href="{% url 'romaneio:romaneio_list' %}">
                         <i class="fas fa-file-invoice"></i> Romaneios
                     </a>
                 </li>
 
                 <!-- Pagamentos Mobile -->
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'financeiro:pagamento_list' %}">
+                    <a class="nav-link {% if ns == 'financeiro' %}active{% endif %}"
+                       href="{% url 'financeiro:pagamento_list' %}">
                         <i class="fas fa-money-bill-wave"></i> Pagamentos
                     </a>
                 </li>
 
                 <!-- Relatórios Mobile -->
                 <li class="nav-item">
-                    <a class="nav-link" 
-                       data-bs-toggle="collapse" 
+                    <a class="nav-link {% if ns == 'relatorios' and urlname != 'dashboard' %}active{% endif %}"
+                       data-bs-toggle="collapse"
                        href="#relatoriosMobile"
                        role="button"
-                       aria-expanded="false"
+                       aria-expanded="{% if ns == 'relatorios' and urlname != 'dashboard' %}true{% else %}false{% endif %}"
                        aria-controls="relatoriosMobile">
                         <i class="fas fa-chart-bar"></i> Relatórios
                         <i class="fas fa-chevron-down ms-auto"></i>
                     </a>
-                    <div class="collapse ps-3" id="relatoriosMobile">
-                        <a class="nav-link" href="{% url 'relatorios:ficha_romaneios' %}">
+                    <div class="collapse ps-3 {% if ns == 'relatorios' and urlname != 'dashboard' %}show{% endif %}" id="relatoriosMobile">
+                        <a class="nav-link {% if ns == 'relatorios' and urlname == 'ficha_romaneios' %}active{% endif %}"
+                           href="{% url 'relatorios:ficha_romaneios' %}">
                             <i class="fas fa-file-alt"></i> Ficha de Romaneios
                         </a>
-                        <a class="nav-link" href="{% url 'relatorios:ficha_madeiras' %}">
+                        <a class="nav-link {% if ns == 'relatorios' and urlname == 'ficha_madeiras' %}active{% endif %}"
+                           href="{% url 'relatorios:ficha_madeiras' %}">
                             <i class="fas fa-tree"></i> Por Tipo de Madeira
                         </a>
-                        <a class="nav-link" href="{% url 'relatorios:fluxo_financeiro' %}">
+                        <a class="nav-link {% if ns == 'relatorios' and urlname == 'fluxo_financeiro' %}active{% endif %}"
+                           href="{% url 'relatorios:fluxo_financeiro' %}">
                             <i class="fas fa-exchange-alt"></i> Fluxo Financeiro
                         </a>
-                        <a class="nav-link" href="{% url 'relatorios:saldo_clientes' %}">
+                        <a class="nav-link {% if ns == 'relatorios' and urlname == 'saldo_clientes' %}active{% endif %}"
+                           href="{% url 'relatorios:saldo_clientes' %}">
                             <i class="fas fa-wallet"></i> Saldo de Clientes
                         </a>
                     </div>
@@ -327,6 +352,7 @@
             </ul>
         </div>
     </div>
+    {% endwith %}
 
     <!-- ========================================
          MENSAGENS DO SISTEMA
@@ -370,14 +396,14 @@
     <footer class="mt-auto" role="contentinfo">
         <div class="container text-center">
             <p class="text-muted mb-0 small">
-                &copy; {% now "Y" %} Romaneios | 
-                Desenvolvido com 
+                &copy; {% now "Y" %} Romaneios |
+                Desenvolvido com
                 <img src="https://img.icons8.com/?size=100&id=LPmcJ9e0FU7K&format=png&color=000000"
-                     alt="Django Framework" 
-                     width="16" 
+                     alt="Django Framework"
+                     width="16"
                      height="16"
-                     style="vertical-align: middle;" 
-                     loading="lazy"> Django | 
+                     style="vertical-align: middle;"
+                     loading="lazy"> Django |
                 <a href="#" id="devInfoLink" class="text-decoration-none" title="Ver contatos do desenvolvedor">
                     <i class="fas fa-code"></i> Contato do Desenvolvedor
                 </a>
@@ -396,47 +422,47 @@
             <i class="fas fa-code me-1"></i>Desenvolvedor Full Stack
         </p>
         <div class="d-grid gap-2">
-            <a class="btn btn-outline-primary" 
-               href="https://warley.dev.ferzion.com.br/" 
-               target="_blank" 
+            <a class="btn btn-outline-primary"
+               href="https://warley.dev.ferzion.com.br/"
+               target="_blank"
                rel="noopener noreferrer"
                title="Visitar portfólio">
                 <i class="fas fa-globe me-2"></i>Portfólio
             </a>
-            <a class="btn btn-outline-info" 
-               href="https://www.linkedin.com/in/warley-ferraz-almeida-280a55185/" 
-               target="_blank" 
+            <a class="btn btn-outline-info"
+               href="https://www.linkedin.com/in/warley-ferraz-almeida-280a55185/"
+               target="_blank"
                rel="noopener noreferrer"
                title="Visitar LinkedIn">
                 <i class="fab fa-linkedin me-2"></i>LinkedIn
             </a>
-            <a class="btn btn-outline-dark" 
-               href="https://github.com/Frraz" 
-               target="_blank" 
+            <a class="btn btn-outline-dark"
+               href="https://github.com/Frraz"
+               target="_blank"
                rel="noopener noreferrer"
                title="Visitar GitHub">
                 <i class="fab fa-github me-2"></i>GitHub
             </a>
-            <a class="btn btn-outline-danger" 
-               href="https://www.instagram.com/ferraz.____/profilecard/" 
-               target="_blank" 
+            <a class="btn btn-outline-danger"
+               href="https://www.instagram.com/ferraz.____/profilecard/"
+               target="_blank"
                rel="noopener noreferrer"
                title="Visitar Instagram">
                 <i class="fab fa-instagram me-2"></i>Instagram
             </a>
-            <a class="btn btn-outline-success" 
-               href="https://wa.me/5594992083253" 
-               target="_blank" 
+            <a class="btn btn-outline-success"
+               href="https://wa.me/5594992083253"
+               target="_blank"
                rel="noopener noreferrer"
                title="Enviar mensagem no WhatsApp">
                 <i class="fab fa-whatsapp me-2"></i>WhatsApp
             </a>
-            <a class="btn btn-outline-secondary" 
+            <a class="btn btn-outline-secondary"
                href="tel:+5594992083253"
                title="Ligar para +55 (94) 9 9208-3253">
                 <i class="fas fa-phone me-2"></i>+55 (94) 9 9208-3253
             </a>
-            <a class="btn btn-outline-primary" 
+            <a class="btn btn-outline-primary"
                href="mailto:warley.ferraz.wf@gmail.com"
                title="Enviar e-mail">
                 <i class="fas fa-envelope me-2"></i>E-mail
@@ -453,26 +479,26 @@
          SCRIPTS
          ======================================== -->
     <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js" 
-            integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" 
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"
+            integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g="
             crossorigin="anonymous"></script>
-    
+
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" 
-            integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
             crossorigin="anonymous"></script>
-    
+
     <!-- Select2 -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    
+
     <!-- Scripts Customizados -->
     <script>
         'use strict';
 
         // ===== INICIALIZAR SELECT2 =====
         $(function() {
-            $('.select2').select2({ 
-                theme: 'bootstrap-5', 
+            $('.select2').select2({
+                theme: 'bootstrap-5',
                 width: '100%',
                 placeholder: 'Selecione...',
                 allowClear: true,
