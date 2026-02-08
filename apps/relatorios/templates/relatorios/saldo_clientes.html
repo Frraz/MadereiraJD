@@ -1,74 +1,146 @@
 {% extends 'base.html' %}
-{% block title %}Relatório de Saldo de Clientes{% endblock %}
+{% block title %}Saldo de Clientes{% endblock %}
 
 {% block content %}
-<div class="card">
-    <div class="card-header">
-        <i class="fas fa-balance-scale"></i> Relatório de Saldo de Clientes
+<div class="container-fluid py-3">
+  <div class="card shadow-sm">
+    <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <div class="fw-bold">
+        <i class="fas fa-balance-scale"></i> Saldo de Clientes
+      </div>
+
+      <div class="text-muted small">
+        Filtro:
+        <b>
+          {% if request.GET.tipo_saldo == "negativos" %}Negativos (Devendo)
+          {% elif request.GET.tipo_saldo == "positivos" %}Positivos (Crédito)
+          {% elif request.GET.tipo_saldo == "zerados" %}Zerados
+          {% else %}Todos{% endif %}
+        </b>
+      </div>
     </div>
 
     <div class="card-body">
-        <!-- Filtros -->
-        <form class="row gy-2 gx-2 mb-3" method="get">
-            <div class="col-auto">
-                <select name="tipo_saldo" class="form-select" aria-label="Filtrar por tipo de saldo">
-                    <option value="todos" {% if request.GET.tipo_saldo == "todos" or not request.GET.tipo_saldo %}selected{% endif %}>Todos</option>
-                    <option value="negativos" {% if request.GET.tipo_saldo == "negativos" %}selected{% endif %}>Negativos (Devendo)</option>
-                    <option value="positivos" {% if request.GET.tipo_saldo == "positivos" %}selected{% endif %}>Positivos (Crédito)</option>
-                    <option value="zerados" {% if request.GET.tipo_saldo == "zerados" %}selected{% endif %}>Zerados</option>
-                </select>
-            </div>
-            <div class="col-auto">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-filter"></i> Filtrar
-                </button>
-            </div>
-        </form>
-
-        <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>Nome</th>
-                        <th>Telefone</th>
-                        <th>CPF/CNPJ</th>
-                        <th class="text-end">Saldo</th>
-                        <th>Situação</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {% for cliente in clientes %}
-                    {% with saldo=cliente.saldo_calc|default:cliente.saldo_atual %}
-                    <tr>
-                        <td>{{ cliente.nome }}</td>
-                        <td>{{ cliente.telefone|default:"—" }}</td>
-                        <td>{{ cliente.cpf_cnpj|default:"—" }}</td>
-
-                        <td class="text-end {% if saldo > 0 %}saldo-positivo{% elif saldo < 0 %}saldo-negativo{% else %}saldo-zerado{% endif %}">
-                            R$ {{ saldo|floatformat:2 }}
-                        </td>
-
-                        <td>
-                            {% if saldo < 0 %}
-                                <span class="badge bg-danger">Devendo</span>
-                            {% elif saldo > 0 %}
-                                <span class="badge bg-success">Crédito</span>
-                            {% else %}
-                                <span class="badge bg-secondary">Zerado</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endwith %}
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" class="text-center text-muted">Nenhum cliente encontrado.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+      <!-- ===== Filtros ===== -->
+      <form class="row g-2 align-items-end mb-3" method="get">
+        <div class="col-12 col-md-4 col-lg-3">
+          <label class="form-label">Tipo de saldo</label>
+          <select name="tipo_saldo" class="form-select" aria-label="Filtrar por tipo de saldo">
+            <option value="todos" {% if request.GET.tipo_saldo == "todos" or not request.GET.tipo_saldo %}selected{% endif %}>
+              Todos
+            </option>
+            <option value="negativos" {% if request.GET.tipo_saldo == "negativos" %}selected{% endif %}>
+              Negativos (Devendo)
+            </option>
+            <option value="positivos" {% if request.GET.tipo_saldo == "positivos" %}selected{% endif %}>
+              Positivos (Crédito)
+            </option>
+            <option value="zerados" {% if request.GET.tipo_saldo == "zerados" %}selected{% endif %}>
+              Zerados
+            </option>
+          </select>
         </div>
 
+        <div class="col-12 col-md-3 col-lg-2 d-grid">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-filter"></i> Filtrar
+          </button>
+        </div>
+      </form>
+
+      <!-- ===== Resumo (contadores simples) ===== -->
+      <div class="row g-2 mb-3">
+        <div class="col-md-4">
+          <div class="p-3 border rounded bg-light h-100">
+            <div class="text-muted small">Clientes exibidos</div>
+            <div class="fw-bold fs-5">{{ clientes|length }}</div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="p-3 border rounded bg-light h-100">
+            <div class="text-muted small">Orientação</div>
+            <div class="small mb-0">
+              <span class="badge bg-danger">Devendo</span>
+              <span class="badge bg-success">Crédito</span>
+              <span class="badge bg-secondary">Zerado</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="p-3 border rounded bg-light h-100">
+            <div class="text-muted small">Observação</div>
+            <div class="small">
+              Saldos negativos indicam <b>valores a receber</b>.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Tabela ===== -->
+      <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Cliente</th>
+              <th style="width: 170px;">Telefone</th>
+              <th style="width: 170px;">CPF/CNPJ</th>
+              <th class="text-end" style="width: 150px;">Saldo</th>
+              <th style="width: 120px;">Situação</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for cliente in clientes %}
+              {% with saldo=cliente.saldo_calc|default:cliente.saldo_atual %}
+              <tr>
+                <td class="fw-semibold">{{ cliente.nome }}</td>
+
+                <td class="text-muted">
+                  {{ cliente.telefone|default:"—" }}
+                </td>
+
+                <td class="text-muted">
+                  {{ cliente.cpf_cnpj|default:"—" }}
+                </td>
+
+                <td class="text-end fw-bold">
+                  {% if saldo < 0 %}
+                    <span class="text-danger">R$ {{ saldo|floatformat:2 }}</span>
+                  {% elif saldo > 0 %}
+                    <span class="text-success">R$ {{ saldo|floatformat:2 }}</span>
+                  {% else %}
+                    <span class="text-secondary">R$ {{ saldo|floatformat:2 }}</span>
+                  {% endif %}
+                </td>
+
+                <td>
+                  {% if saldo < 0 %}
+                    <span class="badge bg-danger">Devendo</span>
+                  {% elif saldo > 0 %}
+                    <span class="badge bg-success">Crédito</span>
+                  {% else %}
+                    <span class="badge bg-secondary">Zerado</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endwith %}
+            {% empty %}
+              <tr>
+                <td colspan="5" class="text-center text-muted py-4">
+                  Nenhum cliente encontrado com o filtro selecionado.
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="text-muted small mt-2">
+        Dica: use o filtro para listar somente clientes <b>devendo</b> (negativos) e priorizar cobranças.
+      </div>
     </div>
+  </div>
 </div>
 {% endblock %}
