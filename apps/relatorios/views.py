@@ -711,40 +711,45 @@ class RelatorioFluxoView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         mes, ano = get_mes_ano(self.request)
 
-        vendas = (
-            Romaneio.objects.filter(data_romaneio__month=mes, data_romaneio__year=ano)
-            .aggregate(total=Sum("valor_total"))
-            .get("total")
-            or 0
-        )
+        vendas_qs = Romaneio.objects.filter(
+            data_romaneio__month=mes,
+            data_romaneio__year=ano,
+        ).select_related("cliente", "motorista")
 
-        pagamentos = (
-            Pagamento.objects.filter(data_pagamento__month=mes, data_pagamento__year=ano)
-            .aggregate(total=Sum("valor"))
-            .get("total")
-            or 0
-        )
+        pagamentos_qs = Pagamento.objects.filter(
+            data_pagamento__month=mes,
+            data_pagamento__year=ano,
+        ).select_related("cliente")
+
+        vendas = vendas_qs.aggregate(total=Sum("valor_total")).get("total") or 0
+        pagamentos = pagamentos_qs.aggregate(total=Sum("valor")).get("total") or 0
 
         saldo_mes = pagamentos - vendas
-        saldo_mes_classe = "text-secondary"
         if saldo_mes > 0:
             saldo_mes_classe = "text-success"
         elif saldo_mes < 0:
             saldo_mes_classe = "text-danger"
+        else:
+            saldo_mes_classe = "text-secondary"
+
+        # anos disponíveis (união do que existir em romaneios/pagamentos)
+        anos_romaneios = [d.year for d in Romaneio.objects.dates("data_romaneio", "year", order="ASC")]
+        anos_pagamentos = [d.year for d in Pagamento.objects.dates("data_pagamento", "year", order="ASC")]
+        anos = sorted(set(anos_romaneios + anos_pagamentos)) or [timezone.localdate().year]
 
         context.update({
-            "saldo_mes_classe": saldo_mes_classe,
             "mes": mes,
             "ano": ano,
+            "meses": range(1, 13),
+            "anos": anos,
+
             "vendas": vendas,
             "pagamentos": pagamentos,
             "saldo_mes": saldo_mes,
-            "vendas_detalhadas": Romaneio.objects.filter(
-                data_romaneio__month=mes, data_romaneio__year=ano
-            ).select_related("cliente", "motorista"),
-            "pagamentos_detalhados": Pagamento.objects.filter(
-                data_pagamento__month=mes, data_pagamento__year=ano
-            ).select_related("cliente"),
+            "saldo_mes_classe": saldo_mes_classe,
+
+            "vendas_detalhadas": vendas_qs.order_by("data_romaneio", "id"),
+            "pagamentos_detalhados": pagamentos_qs.order_by("data_pagamento", "id"),
         })
         return context
 
