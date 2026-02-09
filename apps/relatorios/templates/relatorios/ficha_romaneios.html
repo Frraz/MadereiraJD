@@ -20,7 +20,8 @@
 
           <a class="btn btn-outline-danger btn-sm"
              href="{% url 'relatorios:ficha_romaneios_export_pdf' %}?mes={{ mes_q }}&ano={{ ano_q }}{% if cliente_q %}&cliente={{ cliente_q }}{% endif %}{% if numero_q %}&numero_romaneio={{ numero_q }}{% endif %}{% if madeira_id_q %}&tipo_madeira_id={{ madeira_id_q }}{% endif %}{% if sort_q %}&sort={{ sort_q }}{% endif %}{% if dir_q %}&dir={{ dir_q }}{% endif %}"
-             title="Exportar romaneios do período em PDF">
+             title="Exportar romaneios do período em PDF"
+             target="_blank">
             <i class="fas fa-file-pdf"></i> PDF
           </a>
 
