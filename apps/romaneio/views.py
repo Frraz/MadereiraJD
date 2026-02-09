@@ -172,11 +172,15 @@ class _RomaneioSaveMixin:
                 uf.save()
 
     def _recalcular_totais_apos_salvar(self, romaneio: Romaneio):
-        # Determinístico no DETALHADO: força o item a somar unidades e só então soma no romaneio
-        if romaneio.modalidade == "DETALHADO":
-            itens_db = romaneio.itens.all().prefetch_related("unidades")
-            for item in itens_db:
-                item.atualizar_totais(save=True, atualizar_romaneio=False)
+        """
+        Recalcula itens e romaneio de forma determinística.
+
+        - SIMPLES: item.atualizar_totais() usa quantidade_m3_total informada.
+        - DETALHADO: item.atualizar_totais() soma unidades.
+        """
+        itens_db = romaneio.itens.all().prefetch_related("unidades")
+        for item in itens_db:
+            item.atualizar_totais(save=True, atualizar_romaneio=False)
 
         romaneio.atualizar_totais()
 
