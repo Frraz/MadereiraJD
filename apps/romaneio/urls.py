@@ -1,14 +1,23 @@
 from django.urls import path
-from . import views
 
-app_name = 'romaneio'
+from .views import (
+    RomaneioListView,
+    RomaneioCreateView,
+    RomaneioUpdateView,
+    RomaneioDetailView,
+    RomaneioDeleteView,
+    get_preco_madeira,
+)
+
+app_name = "romaneio"
 
 urlpatterns = [
-    path('', views.RomaneioListView.as_view(), name='romaneio_list'),
-    path('novo/', views.RomaneioCreateView.as_view(), name='romaneio_create'),
-    path('<int:pk>/', views.RomaneioDetailView.as_view(), name='romaneio_detail'),
-    path('<int:pk>/editar/', views.RomaneioUpdateView.as_view(), name='romaneio_update'),
+    path("", RomaneioListView.as_view(), name="romaneio_list"),
+    path("novo/", RomaneioCreateView.as_view(), name="romaneio_create"),
+    path("<int:pk>/", RomaneioDetailView.as_view(), name="romaneio_detail"),
+    path("<int:pk>/editar/", RomaneioUpdateView.as_view(), name="romaneio_update"),
+    path("excluir/<int:pk>/", RomaneioDeleteView.as_view(), name="romaneio_delete"),
 
     # API utilitária
-    path('api/preco-madeira/', views.get_preco_madeira, name='get_preco_madeira'),
+    path("api/preco-madeira/", get_preco_madeira, name="get_preco_madeira"),
 ]

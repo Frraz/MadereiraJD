@@ -309,6 +309,17 @@
                      title="Editar romaneio">
                     <i class="fas fa-edit"></i>
                   </a>
+                  <form method="post"
+                        action="{% url 'romaneio:romaneio_delete' romaneio.id %}"
+                        class="d-inline"
+                        onsubmit="return confirm('Excluir o romaneio #{{ romaneio.numero_romaneio }}? Esta ação não pode ser desfeita.');">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="btn btn-sm btn-outline-danger"
+                            title="Excluir romaneio">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </form>
                 </div>
               </td>
             </tr>

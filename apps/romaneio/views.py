@@ -10,7 +10,7 @@ from django.db.models import Sum
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView, DeleteView
 
 from apps.cadastros.models import Cliente, TipoMadeira
 
@@ -278,6 +278,16 @@ class RomaneioUpdateView(LoginRequiredMixin, _RomaneioFormsetsMixin, _RomaneioSa
 
         messages.success(request, f"Romaneio {self.object.numero_romaneio} atualizado com sucesso!")
         return redirect(self.get_success_url())
+
+
+class RomaneioDeleteView(LoginRequiredMixin, DeleteView):
+    model = Romaneio
+    template_name = "romaneio/romaneio_confirm_delete.html"
+    success_url = reverse_lazy("romaneio:romaneio_list")
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, "Romaneio excluído com sucesso!")
+        return super().delete(request, *args, **kwargs)
 
 
 class RomaneioDetailView(LoginRequiredMixin, DetailView):

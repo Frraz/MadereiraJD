@@ -726,12 +726,35 @@
     const isDetalhado = getModo() === 'DETALHADO';
     document.body.classList.toggle('modo-detalhado', isDetalhado);
 
+    // Campo quantidade total (m³) do item:
+    // - SIMPLES: usuário preenche (required)
+    // - DETALHADO: calculado (readonly e não required)
     $('.quantidade-m3-total').each(function () {
       this.disabled = false;
       this.readOnly = isDetalhado;
       this.required = !isDetalhado;
       this.setAttribute('min', '0.001');
       this.classList.toggle('campo-m3-detalhado', isDetalhado);
+    });
+
+    // Campos de unidades:
+    // - DETALHADO: habilita para enviar no POST
+    // - SIMPLES: desabilita para NÃO bloquear submit (required/min) e nem poluir POST
+    $('.detalhado-only').find('input, select, textarea, button').each(function () {
+      const el = this;
+
+      // Botões (ex.: Adicionar Unidade) também devem sumir no simples
+      if (el.tagName === 'BUTTON') {
+        el.disabled = !isDetalhado;
+        return;
+      }
+
+      el.disabled = !isDetalhado;
+
+      if (!isDetalhado) {
+        // remove validação HTML que pode bloquear submit
+        el.required = false;
+      }
     });
 
     recalcularTudo();
