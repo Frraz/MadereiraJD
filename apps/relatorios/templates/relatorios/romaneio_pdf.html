@@ -258,12 +258,6 @@
         {% if romaneio.modalidade == "DETALHADO" %}
           <td>
             <div class="total-card">
-              <div class="k">Valor bruto</div>
-              <div class="v">R$ {{ romaneio.valor_bruto|floatformat:2 }}</div>
-            </div>
-          </td>
-          <td>
-            <div class="total-card">
               <div class="k">Valor líquido</div>
               <div class="v">R$ {{ romaneio.valor_total|floatformat:2 }}</div>
             </div>
