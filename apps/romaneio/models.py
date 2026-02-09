@@ -67,25 +67,36 @@ class Romaneio(models.Model):
 
     def atualizar_totais(self, *, save: bool = True) -> None:
         """
-        Atualiza valor_bruto, valor_total e m3_total com base nos itens.
+        Atualiza valor_bruto, valor_total (líquido) e m3_total com base nos itens.
 
-        Importante: este método soma *quantidade_m3_total* do ItemRomaneio.
-        No modo DETALHADO, quem garante que quantidade_m3_total esteja correto
-        é ItemRomaneio.atualizar_totais().
+        - valor_bruto: soma dos itens sem desconto
+        - valor_total: valor final com desconto do romaneio (percentual)
         """
         totais = self.itens.aggregate(
             total_valor=Sum("valor_total"),
             total_m3=Sum("quantidade_m3_total"),
         )
+
         bruto = (totais["total_valor"] or Decimal("0.00")).quantize(VALOR_STEP, rounding=ROUND_HALF_UP)
         m3 = (totais["total_m3"] or Decimal("0.000")).quantize(QTD_M3_STEP, rounding=ROUND_HALF_UP)
 
+        desconto_pct = getattr(self, "desconto", None) or Decimal("0.00")  # em %
+        # garante faixa [0, 100]
+        if desconto_pct < 0:
+            desconto_pct = Decimal("0.00")
+        if desconto_pct > 100:
+            desconto_pct = Decimal("100.00")
+
+        fator = (Decimal("100.00") - desconto_pct) / Decimal("100.00")
+        liquido = (bruto * fator).quantize(VALOR_STEP, rounding=ROUND_HALF_UP)
+
         self.valor_bruto = bruto
-        self.valor_total = bruto
+        self.valor_total = liquido
         self.m3_total = m3
 
         if save:
-            super().save(update_fields=["valor_bruto", "valor_total", "m3_total"])
+            update_fields = ["valor_bruto", "valor_total", "m3_total"]
+            super().save(update_fields=update_fields)
 
 
 class ItemRomaneio(models.Model):

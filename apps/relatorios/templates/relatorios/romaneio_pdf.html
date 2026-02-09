@@ -254,18 +254,28 @@
             <div class="v">{{ romaneio.m3_total|floatformat:3 }}</div>
           </div>
         </td>
-        <td>
-          <div class="total-card">
-            <div class="k">Valor bruto</div>
-            <div class="v">R$ {{ romaneio.valor_bruto|floatformat:2 }}</div>
-          </div>
-        </td>
-        <td>
-          <div class="total-card">
-            <div class="k">Valor líquido</div>
-            <div class="v">R$ {{ romaneio.valor_total|floatformat:2 }}</div>
-          </div>
-        </td>
+
+        {% if romaneio.modalidade == "DETALHADO" %}
+          <td>
+            <div class="total-card">
+              <div class="k">Valor bruto</div>
+              <div class="v">R$ {{ romaneio.valor_bruto|floatformat:2 }}</div>
+            </div>
+          </td>
+          <td>
+            <div class="total-card">
+              <div class="k">Valor líquido</div>
+              <div class="v">R$ {{ romaneio.valor_total|floatformat:2 }}</div>
+            </div>
+          </td>
+        {% else %}
+          <td colspan="2">
+            <div class="total-card">
+              <div class="k">Valor líquido</div>
+              <div class="v">R$ {{ romaneio.valor_total|floatformat:2 }}</div>
+            </div>
+          </td>
+        {% endif %}
       </tr>
     </table>
   </div>
