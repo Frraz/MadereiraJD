@@ -255,21 +255,12 @@
           </div>
         </td>
 
-        {% if romaneio.modalidade == "DETALHADO" %}
-          <td>
-            <div class="total-card">
-              <div class="k">Valor líquido</div>
-              <div class="v">R$ {{ romaneio.valor_total|floatformat:2 }}</div>
-            </div>
-          </td>
-        {% else %}
-          <td colspan="2">
-            <div class="total-card">
-              <div class="k">Valor líquido</div>
-              <div class="v">R$ {{ romaneio.valor_total|floatformat:2 }}</div>
-            </div>
-          </td>
-        {% endif %}
+        <td colspan="2">
+          <div class="total-card">
+            <div class="k">Valor líquido</div>
+            <div class="v">R$ {{ romaneio.valor_total|floatformat:2 }}</div>
+          </div>
+        </td>
       </tr>
     </table>
   </div>
