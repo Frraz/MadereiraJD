@@ -45,3 +45,8 @@ fonttools==4.55.3
 
 # PDF fallback (pure python)
 reportlab==4.2.0
+
+
+
+
+#testando dois servidores
