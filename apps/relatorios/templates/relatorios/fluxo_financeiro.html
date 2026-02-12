@@ -35,8 +35,8 @@
           <label class="form-label">Mês</label>
           <select name="mes" class="form-select">
             {% for m in meses %}
-              <option value="{{ m }}"
-                      {% if m|stringformat:"s" == request.GET.mes|default:mes|stringformat:"s" %}selected{% endif %}>
+              <option value="{{ m|stringformat:'d' }}"
+                      {% if m|stringformat:'d' == request.GET.mes|default:mes|stringformat:'s' %}selected{% endif %}>
                 {{ m|stringformat:"02d" }}
               </option>
             {% endfor %}
@@ -47,9 +47,9 @@
           <label class="form-label">Ano</label>
           <select name="ano" class="form-select">
             {% for a in anos %}
-              <option value="{{ a }}"
-                      {% if a|stringformat:"s" == request.GET.ano|default:ano|stringformat:"s" %}selected{% endif %}>
-                {{ a }}
+              <option value="{{ a|stringformat:'d' }}"
+                      {% if a|stringformat:'d' == request.GET.ano|default:ano|stringformat:'s' %}selected{% endif %}>
+                {{ a|stringformat:'d' }}
               </option>
             {% endfor %}
           </select>

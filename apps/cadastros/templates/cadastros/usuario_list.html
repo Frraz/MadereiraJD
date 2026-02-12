@@ -86,11 +86,14 @@
 </div>
 
 {% if is_paginated %}
+{% with q=request.GET.q %}
 <nav aria-label="Navegação de páginas">
     <ul class="pagination justify-content-center">
         {% if page_obj.has_previous %}
             <li class="page-item">
-                <a class="page-link" href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ page_obj.previous_page_number }}" aria-label="Anterior">
+                <a class="page-link"
+                   href="?{% if q %}q={{ q|urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}"
+                   aria-label="Anterior">
                     <span aria-hidden="true">&laquo;</span>
                 </a>
             </li>
@@ -101,12 +104,19 @@
             {% if page_obj.number == num %}
                 <li class="page-item active"><span class="page-link">{{ num }}</span></li>
             {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                <li class="page-item"><a class="page-link" href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ num }}">{{ num }}</a></li>
+                <li class="page-item">
+                    <a class="page-link"
+                       href="?{% if q %}q={{ q|urlencode }}&{% endif %}page={{ num }}">
+                       {{ num }}
+                    </a>
+                </li>
             {% endif %}
         {% endfor %}
         {% if page_obj.has_next %}
             <li class="page-item">
-                <a class="page-link" href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ page_obj.next_page_number }}" aria-label="Próxima">
+                <a class="page-link"
+                   href="?{% if q %}q={{ q|urlencode }}&{% endif %}page={{ page_obj.next_page_number }}"
+                   aria-label="Próxima">
                     <span aria-hidden="true">&raquo;</span>
                 </a>
             </li>
@@ -115,6 +125,7 @@
         {% endif %}
     </ul>
 </nav>
+{% endwith %}
 {% endif %}
 
 {% endblock %}

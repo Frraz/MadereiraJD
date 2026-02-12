@@ -28,27 +28,24 @@ class PagamentoListView(LoginRequiredMixin, ListView):
         ano = self.request.GET.get("ano")
         cliente_id = self.request.GET.get("cliente")
 
-        # Se nenhum filtro de mês/ano, usa mês/ano atual
-        if not mes and not ano:
-            now = datetime.now()
-            mes = now.month
-            ano = now.year
-
-        # Se vier só um, completa com o atual (melhor UX)
-        if mes and not ano:
-            ano = datetime.now().year
-        if ano and not mes:
-            mes = datetime.now().month
-
+        # Limpa entradas (garante valores válidos inteiro)
         try:
             mes_int = int(mes) if mes else None
-            ano_int = int(ano) if ano else None
         except (TypeError, ValueError):
             mes_int = None
+        try:
+            ano_int = int(ano) if ano else None
+        except (TypeError, ValueError):
             ano_int = None
 
+        # Só filtra se usuário seleciona mês ou ano:
         if mes_int and ano_int:
             qs = qs.filter(data_pagamento__month=mes_int, data_pagamento__year=ano_int)
+        elif ano_int:
+            qs = qs.filter(data_pagamento__year=ano_int)
+        elif mes_int:
+            qs = qs.filter(data_pagamento__month=mes_int)
+        # Se nenhum, mostra tudo
 
         if cliente_id:
             qs = qs.filter(cliente_id=cliente_id)

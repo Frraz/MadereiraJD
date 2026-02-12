@@ -53,13 +53,13 @@ class RomaneioListView(LoginRequiredMixin, ListView):
         numero = self.request.GET.get("numero")
         modalidade = self.request.GET.get("modalidade")
 
-        # Default: mês/ano atual
+        # Apenas filtra se ambos enviados!
         if mes and ano:
             try:
                 qs = qs.filter(data_romaneio__month=int(mes), data_romaneio__year=int(ano))
             except (ValueError, TypeError):
                 pass
-        else:
+        elif not self.request.GET:
             now = datetime.now()
             qs = qs.filter(data_romaneio__month=now.month, data_romaneio__year=now.year)
 

@@ -59,19 +59,43 @@
         </div>
         <!-- Paginação -->
         {% if is_paginated %}
+        {% with q=request.GET.q %}
         <nav>
             <ul class="pagination justify-content-center">
                 {% if page_obj.has_previous %}
-                    <li class="page-item"><a class="page-link" href="?page=1">&laquo; Primeiro</a></li>
-                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">&lsaquo; Anterior</a></li>
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="?{% if q %}q={{ q|urlencode }}&{% endif %}page=1">
+                            &laquo; Primeiro
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="?{% if q %}q={{ q|urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}">
+                            &lsaquo; Anterior
+                        </a>
+                    </li>
                 {% endif %}
-                <li class="page-item disabled"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
+                <li class="page-item disabled">
+                    <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                </li>
                 {% if page_obj.has_next %}
-                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Próxima &rsaquo;</a></li>
-                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Última &raquo;</a></li>
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="?{% if q %}q={{ q|urlencode }}&{% endif %}page={{ page_obj.next_page_number }}">
+                            Próxima &rsaquo;
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="?{% if q %}q={{ q|urlencode }}&{% endif %}page={{ page_obj.paginator.num_pages }}">
+                            Última &raquo;
+                        </a>
+                    </li>
                 {% endif %}
             </ul>
         </nav>
+        {% endwith %}
         {% endif %}
     </div>
 </div>

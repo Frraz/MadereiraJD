@@ -135,8 +135,8 @@
           <select name="mes" class="form-select">
             <option value="">Todos</option>
             {% for m in meses %}
-            <option value="{{ m }}" 
-                    {% if m|stringformat:"s" == request.GET.mes %}selected{% endif %}>
+            <option value="{{ m|stringformat:'d' }}"
+                    {% if m|stringformat:'d' == request.GET.mes|stringformat:'s' %}selected{% endif %}>
               {{ m|stringformat:"02d" }}
             </option>
             {% endfor %}
@@ -148,9 +148,9 @@
           <select name="ano" class="form-select">
             <option value="">Todos</option>
             {% for ano in anos %}
-            <option value="{{ ano }}" 
-                    {% if request.GET.ano == ano|stringformat:"s" %}selected{% endif %}>
-              {{ ano }}
+            <option value="{{ ano|stringformat:'d' }}"
+                    {% if ano|stringformat:'d' == request.GET.ano|stringformat:'s' %}selected{% endif %}>
+              {{ ano|stringformat:'d' }}
             </option>
             {% endfor %}
           </select>
@@ -338,30 +338,31 @@
 
       <!-- Paginação -->
       {% if is_paginated %}
+      {% with numero=request.GET.numero cliente=request.GET.cliente modalidade=request.GET.modalidade mes=request.GET.mes ano=request.GET.ano %}
       <nav aria-label="Navegação de páginas" class="mt-4">
         <ul class="pagination justify-content-center flex-wrap">
           {% if page_obj.has_previous %}
-          <li class="page-item">
-            <a class="page-link" 
-               href="?page=1{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}" 
-               aria-label="Primeira página">
-              <i class="fas fa-angle-double-left"></i>
-            </a>
-          </li>
-          <li class="page-item">
-            <a class="page-link" 
-               href="?page={{ page_obj.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}" 
-               aria-label="Página anterior">
-              <i class="fas fa-angle-left"></i>
-            </a>
-          </li>
+            <li class="page-item">
+              <a class="page-link"
+                href="?{% if numero %}numero={{ numero|urlencode }}&{% endif %}{% if cliente %}cliente={{ cliente|urlencode }}&{% endif %}{% if modalidade %}modalidade={{ modalidade|urlencode }}&{% endif %}{% if mes %}mes={{ mes|urlencode }}&{% endif %}{% if ano %}ano={{ ano|urlencode }}&{% endif %}page=1"
+                aria-label="Primeira página">
+                <i class="fas fa-angle-double-left"></i>
+              </a>
+            </li>
+            <li class="page-item">
+              <a class="page-link"
+                href="?{% if numero %}numero={{ numero|urlencode }}&{% endif %}{% if cliente %}cliente={{ cliente|urlencode }}&{% endif %}{% if modalidade %}modalidade={{ modalidade|urlencode }}&{% endif %}{% if mes %}mes={{ mes|urlencode }}&{% endif %}{% if ano %}ano={{ ano|urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}"
+                aria-label="Página anterior">
+                <i class="fas fa-angle-left"></i>
+              </a>
+            </li>
           {% else %}
-          <li class="page-item disabled">
-            <span class="page-link"><i class="fas fa-angle-double-left"></i></span>
-          </li>
-          <li class="page-item disabled">
-            <span class="page-link"><i class="fas fa-angle-left"></i></span>
-          </li>
+            <li class="page-item disabled">
+              <span class="page-link"><i class="fas fa-angle-double-left"></i></span>
+            </li>
+            <li class="page-item disabled">
+              <span class="page-link"><i class="fas fa-angle-left"></i></span>
+            </li>
           {% endif %}
 
           <li class="page-item active">
@@ -371,30 +372,31 @@
           </li>
 
           {% if page_obj.has_next %}
-          <li class="page-item">
-            <a class="page-link" 
-               href="?page={{ page_obj.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}" 
-               aria-label="Próxima página">
-              <i class="fas fa-angle-right"></i>
-            </a>
-          </li>
-          <li class="page-item">
-            <a class="page-link" 
-               href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}" 
-               aria-label="Última página">
-              <i class="fas fa-angle-double-right"></i>
-            </a>
-          </li>
+            <li class="page-item">
+              <a class="page-link"
+                href="?{% if numero %}numero={{ numero|urlencode }}&{% endif %}{% if cliente %}cliente={{ cliente|urlencode }}&{% endif %}{% if modalidade %}modalidade={{ modalidade|urlencode }}&{% endif %}{% if mes %}mes={{ mes|urlencode }}&{% endif %}{% if ano %}ano={{ ano|urlencode }}&{% endif %}page={{ page_obj.next_page_number }}"
+                aria-label="Próxima página">
+                <i class="fas fa-angle-right"></i>
+              </a>
+            </li>
+            <li class="page-item">
+              <a class="page-link"
+                href="?{% if numero %}numero={{ numero|urlencode }}&{% endif %}{% if cliente %}cliente={{ cliente|urlencode }}&{% endif %}{% if modalidade %}modalidade={{ modalidade|urlencode }}&{% endif %}{% if mes %}mes={{ mes|urlencode }}&{% endif %}{% if ano %}ano={{ ano|urlencode }}&{% endif %}page={{ page_obj.paginator.num_pages }}"
+                aria-label="Última página">
+                <i class="fas fa-angle-double-right"></i>
+              </a>
+            </li>
           {% else %}
-          <li class="page-item disabled">
-            <span class="page-link"><i class="fas fa-angle-right"></i></span>
-          </li>
-          <li class="page-item disabled">
-            <span class="page-link"><i class="fas fa-angle-double-right"></i></span>
-          </li>
+            <li class="page-item disabled">
+              <span class="page-link"><i class="fas fa-angle-right"></i></span>
+            </li>
+            <li class="page-item disabled">
+              <span class="page-link"><i class="fas fa-angle-double-right"></i></span>
+            </li>
           {% endif %}
         </ul>
       </nav>
+      {% endwith %}
       {% endif %}
     </div>
   </div>

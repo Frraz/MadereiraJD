@@ -43,16 +43,16 @@
 
         <div class="col-6 col-md-3 col-lg-2">
           <label class="form-label">Ano</label>
-          <select name="ano" class="form-select">
-            <option value="">Ano</option>
-            {% for i in "012" %}
-              {% with ano_val=2024|add:forloop.counter0 %}
-                <option value="{{ ano_val }}" {% if request.GET.ano == ano_val|stringformat:"s" %}selected{% endif %}>
-                  {{ ano_val }}
-                </option>
-              {% endwith %}
-            {% endfor %}
-          </select>
+            <select name="ano" class="form-select">
+              <option value="">Ano</option>
+              {% for i in "012" %}
+                {% with ano_val=2024|add:forloop.counter0 %}
+                  <option value="{{ ano_val|stringformat:'d' }}" {% if request.GET.ano == ano_val|stringformat:"s" %}selected{% endif %}>
+                    {{ ano_val|stringformat:'d' }}
+                  </option>
+                {% endwith %}
+              {% endfor %}
+            </select>
         </div>
 
         <div class="col-12 col-md-3 col-lg-2 d-grid">
@@ -165,35 +165,47 @@
 
       {# ===== Paginação ===== #}
       {% if is_paginated %}
-        <nav aria-label="Paginação" class="mt-3">
-          <ul class="pagination justify-content-center flex-wrap">
-            {% with params=request.GET.urlencode|cut:'page=' %}
-              {% if page_obj.has_previous %}
-                <li class="page-item">
-                  <a class="page-link" href="?page=1{% if params %}&{{ params }}{% endif %}">&laquo; Primeiro</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if params %}&{{ params }}{% endif %}">&lsaquo; Anterior</a>
-                </li>
-              {% endif %}
+      {% with cliente=request.GET.cliente mes=request.GET.mes ano=request.GET.ano %}
+      <nav aria-label="Paginação" class="mt-3">
+        <ul class="pagination justify-content-center flex-wrap">
+          {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link"
+                href="?{% if cliente %}cliente={{ cliente|urlencode }}&{% endif %}{% if mes %}mes={{ mes|urlencode }}&{% endif %}{% if ano %}ano={{ ano|urlencode }}&{% endif %}page=1">
+                &laquo; Primeiro
+              </a>
+            </li>
+            <li class="page-item">
+              <a class="page-link"
+                href="?{% if cliente %}cliente={{ cliente|urlencode }}&{% endif %}{% if mes %}mes={{ mes|urlencode }}&{% endif %}{% if ano %}ano={{ ano|urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}">
+                &lsaquo; Anterior
+              </a>
+            </li>
+          {% endif %}
 
-              <li class="page-item disabled">
-                <span class="page-link">
-                  Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
-                </span>
-              </li>
+          <li class="page-item disabled">
+            <span class="page-link">
+              Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+            </span>
+          </li>
 
-              {% if page_obj.has_next %}
-                <li class="page-item">
-                  <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if params %}&{{ params }}{% endif %}">Próxima &rsaquo;</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if params %}&{{ params }}{% endif %}">Última &raquo;</a>
-                </li>
-              {% endif %}
-            {% endwith %}
-          </ul>
-        </nav>
+          {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link"
+                href="?{% if cliente %}cliente={{ cliente|urlencode }}&{% endif %}{% if mes %}mes={{ mes|urlencode }}&{% endif %}{% if ano %}ano={{ ano|urlencode }}&{% endif %}page={{ page_obj.next_page_number }}">
+                Próxima &rsaquo;
+              </a>
+            </li>
+            <li class="page-item">
+              <a class="page-link"
+                href="?{% if cliente %}cliente={{ cliente|urlencode }}&{% endif %}{% if mes %}mes={{ mes|urlencode }}&{% endif %}{% if ano %}ano={{ ano|urlencode }}&{% endif %}page={{ page_obj.paginator.num_pages }}">
+                Última &raquo;
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+      {% endwith %}
       {% endif %}
     </div>
   </div>
