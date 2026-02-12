@@ -28,28 +28,26 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
             set -euo pipefail
             echo 'Entrando na pasta do projeto'
-            cd /var/www/docker-instances/MadereiraJD
+            cd /home/deploy/Romaneios
             echo 'Fazendo pull do repositório'
-            git config --global --add safe.directory /var/www/docker-instances/MadereiraJD
+            git config --global --add safe.directory /home/deploy/Romaneios
             git pull
             git branch --show-current
             echo 'Hash do commit atual:'
             git rev-parse HEAD
-            if [ ! -d ".venv" ]; then
+            if [ ! -d \"venv\" ]; then
               echo 'Virtualenv não existe! Crie manualmente antes do deploy automatizado.'
               exit 1
             fi
             echo 'Ativando virtualenv'
-            source .venv/bin/activate
+            source venv/bin/activate
             echo 'Instalando requirements'
-            pip install -r requirements.txt
+            pip install -r requirements.txt --break-system-packages
             echo 'Migrando banco de dados'
             python manage.py migrate --noinput
             echo 'Coletando estáticos'
             python manage.py collectstatic --noinput
-            echo 'Reiniciando o serviço do MadereiraJD'
-            sudo systemctl restart madereirajd
+            echo 'Reiniciando o serviço gunicorn_romaneios'
+            sudo systemctl restart gunicorn_romaneios
             echo 'Deploy finalizado com sucesso!'
           "
-
-          
